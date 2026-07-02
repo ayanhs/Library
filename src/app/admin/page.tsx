@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminRecentUsers } from "@/components/admin/admin-recent-users";
 import { AdminStatsPanel } from "@/components/admin/admin-stats-panel";
 import { isAdminUser } from "@/lib/admin/auth";
-import { getAdminStats } from "@/lib/admin/queries";
+import { getAdminRecentUsers, getAdminStats } from "@/lib/admin/queries";
 import { getBooksCount, getRecentBooks } from "@/lib/books/queries";
 import { RecentBooks } from "@/components/books/book-card";
 import { createClient, getSupabaseEnv } from "@/lib/supabase/server";
@@ -22,7 +23,9 @@ export default async function AdminDashboardPage() {
   if (!isAdminUser(user)) redirect("/dashboard");
 
   const displayName = getDisplayName(user.user_metadata, user.email);
-  const { stats, error: statsError } = await getAdminStats();
+  const recentUserDays = 30;
+  const [{ stats, error: statsError }, { users: recentUsers, error: usersError }] =
+    await Promise.all([getAdminStats(), getAdminRecentUsers(recentUserDays)]);
   const [myBooksCount, recentBooks] = await Promise.all([
     getBooksCount(user.id),
     getRecentBooks(user.id),
@@ -44,6 +47,23 @@ export default async function AdminDashboardPage() {
             Platform overview
           </h2>
           <AdminStatsPanel stats={stats} error={statsError} />
+        </section>
+
+        <section className="mb-10 space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-amber-400/80">
+              New registrations
+            </h2>
+            <p className="mt-1 text-xs text-amber-200/40">
+              Name and email for users who signed up in the last {recentUserDays}{" "}
+              days.
+            </p>
+          </div>
+          <AdminRecentUsers
+            users={recentUsers}
+            error={usersError}
+            days={recentUserDays}
+          />
         </section>
 
         <section className="space-y-4">

@@ -5,6 +5,13 @@ export interface AdminStats {
   totalChapters: number;
 }
 
+export interface AdminRecentUser {
+  id: string;
+  email: string;
+  fullName: string;
+  createdAt: string;
+}
+
 export interface AdminStatsResult {
   stats: AdminStats | null;
   error: string | null;
@@ -99,6 +106,91 @@ export async function getAdminStats(): Promise<AdminStatsResult> {
     return {
       stats: null,
       error: err instanceof Error ? err.message : "Failed to load admin stats.",
+    };
+  }
+}
+
+interface AdminRecentUserRow {
+  user_id: string;
+  email: string;
+  full_name: string;
+  created_at: string;
+}
+
+function normalizeRecentUsers(data: unknown): AdminRecentUserRow[] {
+  if (!data) return [];
+
+  let parsed = data;
+  if (typeof parsed === "string") {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      return [];
+    }
+  }
+
+  if (!Array.isArray(parsed)) return [];
+
+  return parsed
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const record = row as Record<string, unknown>;
+      const id = String(record.user_id ?? record.userId ?? "");
+      const email = String(record.email ?? "");
+      const fullName = String(record.full_name ?? record.fullName ?? "");
+      const createdAt = String(record.created_at ?? record.createdAt ?? "");
+      if (!id || !email) return null;
+      return { user_id: id, email, full_name: fullName, created_at: createdAt };
+    })
+    .filter((row): row is AdminRecentUserRow => row !== null);
+}
+
+export async function getAdminRecentUsers(days = 30): Promise<{
+  users: AdminRecentUser[];
+  error: string | null;
+}> {
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const { isAdminUser } = await import("@/lib/admin/auth");
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || !isAdminUser(user)) {
+      return { users: [], error: "Not signed in as admin." };
+    }
+
+    const { data, error } = await supabase.rpc("get_admin_recent_users", {
+      p_days: days,
+    });
+
+    if (error) {
+      return {
+        users: [],
+        error: error.message.includes("Could not find")
+          ? "Run supabase/setup-admin-users.sql in Supabase SQL Editor, then refresh."
+          : error.message.includes("not authorized")
+            ? `Admin verification failed for ${user.email}.`
+            : error.message,
+      };
+    }
+
+    return {
+      users: normalizeRecentUsers(data).map((row) => ({
+        id: row.user_id,
+        email: row.email,
+        fullName: row.full_name || row.email.split("@")[0],
+        createdAt: row.created_at,
+      })),
+      error: null,
+    };
+  } catch (err) {
+    return {
+      users: [],
+      error:
+        err instanceof Error ? err.message : "Failed to load recent users.",
     };
   }
 }
