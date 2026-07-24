@@ -78,6 +78,7 @@ export async function generateCoverOptions(bookId: string): Promise<GenerateResu
 
     let imageBuffers: Buffer[];
     let fallbackCount = 0;
+    let lastError: string | undefined;
     try {
       const result = await fetchCoverImages(
         fullPrompts,
@@ -85,6 +86,7 @@ export async function generateCoverOptions(bookId: string): Promise<GenerateResu
       );
       imageBuffers = result.buffers;
       fallbackCount = result.fallbackCount;
+      lastError = result.lastError;
     } catch (err) {
       return {
         success: false,
@@ -141,7 +143,8 @@ export async function generateCoverOptions(bookId: string): Promise<GenerateResu
           bookId
         ),
         warning:
-          "The image service was busy, so placeholder covers were used. Wait a minute and click Regenerate, or add a free POLLINATIONS_API_KEY to .env.local for faster, more reliable results.",
+          lastError ||
+          "The image service was busy, so placeholder covers were used. Add POLLINATIONS_API_KEY in Vercel for reliable AI cover art (enter.pollinations.ai/keys).",
       };
     }
 
@@ -156,7 +159,9 @@ export async function generateCoverOptions(bookId: string): Promise<GenerateResu
           })),
           bookId
         ),
-        warning: `${fallbackCount} cover(s) used a placeholder because the image service was busy. Regenerate for AI art, or add POLLINATIONS_API_KEY to .env.local.`,
+        warning:
+          lastError ||
+          `${fallbackCount} cover(s) used a placeholder because the image service was busy.`,
       };
     }
 

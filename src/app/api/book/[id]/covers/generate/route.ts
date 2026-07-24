@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBookById } from "@/lib/books/queries";
 import { getBlueprintByBookId } from "@/lib/blueprint/queries";
 import { withAiGuard } from "@/lib/ai-usage/with-guard";
-import { fetchSingleCoverImage } from "@/lib/covers/image-gen";
+import { fetchSingleCoverImage, getCoverGenerationConfig } from "@/lib/covers/image-gen";
 import { generateCoverPromptsWithAI } from "@/lib/covers/openai";
 import { toCoverPreviews } from "@/lib/covers/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -104,7 +104,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         fullPrompt: `${spec.prompt} Style: ${spec.style}. Professional book cover illustration, portrait orientation, no text, no typography, no letters, no words.`,
       }));
 
-      return NextResponse.json({ batchId, options });
+      return NextResponse.json({
+        batchId,
+        options,
+        ...getCoverGenerationConfig(),
+      });
     }
 
     if (phase === "image") {
@@ -132,7 +136,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
 
       const seed = Date.now() + index * 997;
-      const { buffer, usedFallback } = await fetchSingleCoverImage(
+      const { buffer, usedFallback, errorMessage } = await fetchSingleCoverImage(
         fullPrompt,
         seed,
         style
@@ -168,7 +172,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         ],
         bookId
       );
-      return NextResponse.json({ cover: preview, usedFallback });
+      return NextResponse.json({
+        cover: preview,
+        usedFallback,
+        warning: usedFallback ? errorMessage : undefined,
+      });
     }
 
     return NextResponse.json({ error: "Unknown phase." }, { status: 400 });

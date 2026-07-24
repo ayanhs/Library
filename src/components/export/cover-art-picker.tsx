@@ -105,13 +105,26 @@ export function CoverArtPicker({
 
       const batchId = promptsBody.batchId as string;
       const options = promptsBody.options as CoverOptionSpec[];
+      const requestDelayMs =
+        typeof promptsBody.requestDelayMs === "number"
+          ? promptsBody.requestDelayMs
+          : 8_000;
+
+      if (promptsBody.warning) {
+        setWarning(promptsBody.warning as string);
+      }
+
+      if (promptsBody.pollinationsConfigured === false && promptsBody.warning) {
+        throw new Error(promptsBody.warning as string);
+      }
+
       const generated: BookCoverPreview[] = [];
       let fallbackCount = 0;
 
       for (let index = 0; index < options.length; index++) {
         if (index > 0) {
           setProgress(`Waiting before cover ${index + 1} of ${options.length}…`);
-          await new Promise((resolve) => setTimeout(resolve, 16_000));
+          await new Promise((resolve) => setTimeout(resolve, requestDelayMs));
         }
 
         setProgress(`Generating cover ${index + 1} of ${options.length}…`);
@@ -139,6 +152,9 @@ export function CoverArtPicker({
 
         if (imageBody.usedFallback) {
           fallbackCount += 1;
+          if (imageBody.warning) {
+            setWarning(imageBody.warning as string);
+          }
         }
 
         generated.push(imageBody.cover as BookCoverPreview);
@@ -147,7 +163,7 @@ export function CoverArtPicker({
 
       if (fallbackCount === options.length) {
         setWarning(
-          "The image service was busy, so placeholder covers were used. Wait a minute and click Regenerate, or add POLLINATIONS_API_KEY to .env.local."
+          "The image service was busy, so placeholder covers were used. Add POLLINATIONS_API_KEY in Vercel for reliable AI cover art (enter.pollinations.ai/keys)."
         );
       } else if (fallbackCount > 0) {
         setWarning(
@@ -158,7 +174,7 @@ export function CoverArtPicker({
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
         setError(
-          "Cover generation timed out. Try again, or add POLLINATIONS_API_KEY to .env.local."
+          "Cover generation timed out. Add POLLINATIONS_API_KEY in Vercel for faster, reliable cover art (enter.pollinations.ai/keys)."
         );
       } else {
         setError(
