@@ -13,6 +13,7 @@ import {
 } from "@/components/auth/auth-card";
 import { PasswordInput } from "@/components/auth/password-input";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/supabase/auth-url";
 import { signupSchema, type SignupFormData } from "@/lib/validations/auth";
 
 export function SignupForm() {
@@ -69,6 +70,7 @@ export function SignupForm() {
           data: {
             full_name: result.data.fullName,
           },
+          emailRedirectTo: getAuthCallbackUrl("/dashboard"),
         },
       });
 

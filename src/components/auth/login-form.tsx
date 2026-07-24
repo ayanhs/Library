@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AuthCard,
   AuthLink,
@@ -19,6 +19,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
+  const authError = searchParams.get("error");
 
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -29,6 +30,14 @@ export function LoginForm() {
   >({});
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (authError === "auth_callback_failed") {
+      setServerError(
+        "Email confirmation failed or the link expired. Sign in, or request a new confirmation email."
+      );
+    }
+  }, [authError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

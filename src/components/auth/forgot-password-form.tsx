@@ -11,6 +11,7 @@ import {
   SuccessAlert,
 } from "@/components/auth/auth-card";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/supabase/auth-url";
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,
@@ -60,7 +61,7 @@ export function ForgotPasswordForm() {
       const { error } = await supabase.auth.resetPasswordForEmail(
         result.data.email,
         {
-          redirectTo: `${window.location.origin}/login`,
+          redirectTo: getAuthCallbackUrl("/login"),
         }
       );
 
