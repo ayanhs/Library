@@ -120,6 +120,7 @@ export function CoverArtPicker({
 
       const generated: BookCoverPreview[] = [];
       let fallbackCount = 0;
+      let lastFallbackWarning = "";
 
       for (let index = 0; index < options.length; index++) {
         if (index > 0) {
@@ -153,7 +154,8 @@ export function CoverArtPicker({
         if (imageBody.usedFallback) {
           fallbackCount += 1;
           if (imageBody.warning) {
-            setWarning(imageBody.warning as string);
+            lastFallbackWarning = imageBody.warning as string;
+            setWarning(lastFallbackWarning);
           }
         }
 
@@ -163,7 +165,8 @@ export function CoverArtPicker({
 
       if (fallbackCount === options.length) {
         setWarning(
-          "The image service was busy, so placeholder covers were used. Add POLLINATIONS_API_KEY in Vercel for reliable AI cover art (enter.pollinations.ai/keys)."
+          lastFallbackWarning ||
+            "Cover art could not be generated. Add a valid POLLINATIONS_API_KEY (sk_...) in Vercel → Settings → Environment Variables, then redeploy."
         );
       } else if (fallbackCount > 0) {
         setWarning(

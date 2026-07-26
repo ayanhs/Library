@@ -136,11 +136,20 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
 
       const seed = Date.now() + index * 997;
-      const { buffer, usedFallback, errorMessage } = await fetchSingleCoverImage(
-        fullPrompt,
-        seed,
-        style
-      );
+      let buffer: Buffer;
+      let usedFallback = false;
+      let errorMessage: string | undefined;
+
+      try {
+        const result = await fetchSingleCoverImage(fullPrompt, seed, style);
+        buffer = result.buffer;
+        usedFallback = result.usedFallback;
+        errorMessage = result.errorMessage;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Cover image generation failed.";
+        return NextResponse.json({ error: message }, { status: 503 });
+      }
 
       const { data: inserted, error } = await supabase
         .from("book_covers")
