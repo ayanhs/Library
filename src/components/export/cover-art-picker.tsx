@@ -166,13 +166,27 @@ export function CoverArtPicker({
       if (fallbackCount === options.length) {
         setWarning(
           lastFallbackWarning ||
-            "Cover art could not be generated. Add a valid POLLINATIONS_API_KEY (sk_...) in Vercel → Settings → Environment Variables, then redeploy."
+            "No AI cover images were generated. Your daily cover credit was not used — try again after Pollinations credits refresh or top up at enter.pollinations.ai."
         );
       } else if (fallbackCount > 0) {
         setWarning(
-          `${fallbackCount} cover(s) used a placeholder because the image service was busy.`
+          lastFallbackWarning ||
+            `${fallbackCount} cover(s) used a placeholder because the image service was busy.`
         );
       }
+
+      const realImageCount = options.length - fallbackCount;
+      await fetch(`/api/book/${bookId}/covers/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phase: "complete",
+          batchId,
+          realImageCount,
+        }),
+        signal: controller.signal,
+      });
+
       refreshUsage();
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {

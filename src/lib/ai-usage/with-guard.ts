@@ -35,3 +35,21 @@ export async function withAiGuard<T>(
     return { success: false, message };
   }
 }
+
+/** Check limits without consuming a daily credit (used before multi-step cover flow). */
+export async function assertAiUsageAllowed(
+  userId: string,
+  feature: AiFeature
+): Promise<GuardedResult<null>> {
+  const guard = await checkAiUsage(userId, feature);
+  if (!guard.allowed) {
+    return {
+      success: false,
+      message: formatAiGuardMessage(guard),
+      code: guard.code,
+      coverCooldownSeconds: guard.coverCooldownSeconds,
+    };
+  }
+
+  return { success: true, data: null };
+}

@@ -2,7 +2,8 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getBookById } from "@/lib/books/queries";
 import { getBlueprintByBookId } from "@/lib/blueprint/queries";
-import { withAiGuard } from "@/lib/ai-usage/with-guard";
+import { assertAiUsageAllowed } from "@/lib/ai-usage/with-guard";
+import { recordAiRequest } from "@/lib/ai-usage/guard";
 import { fetchSingleCoverImage, getCoverGenerationConfig } from "@/lib/covers/image-gen";
 import { generateCoverPromptsWithAI } from "@/lib/covers/openai";
 import { toCoverPreviews } from "@/lib/covers/queries";
@@ -65,27 +66,32 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         book.story_prompt?.trim() ||
         "";
 
-      const aiResult = await withAiGuard(user.id, "cover", () =>
-        generateCoverPromptsWithAI({
-          book,
-          blueprint: blueprint.blueprint,
-          authorName,
-          description,
-        })
-      );
-
-      if (!aiResult.success) {
+      const usageCheck = await assertAiUsageAllowed(user.id, "cover");
+      if (!usageCheck.success) {
         return NextResponse.json(
           {
-            error: aiResult.message,
-            code: aiResult.code,
-            coverCooldownSeconds: aiResult.coverCooldownSeconds,
+            error: usageCheck.message,
+            code: usageCheck.code,
+            coverCooldownSeconds: usageCheck.coverCooldownSeconds,
           },
           { status: 429 }
         );
       }
 
-      const promptSpecs = aiResult.data;
+      let promptSpecs;
+      try {
+        promptSpecs = await generateCoverPromptsWithAI({
+          book,
+          blueprint: blueprint.blueprint,
+          authorName,
+          description,
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to create cover prompts.";
+        await recordAiRequest(user.id, "cover", "failure", message);
+        return NextResponse.json({ error: message }, { status: 500 });
+      }
 
       const batchId = randomUUID();
 
@@ -185,6 +191,39 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         cover: preview,
         usedFallback,
         warning: errorMessage,
+      });
+    }
+
+    if (phase === "complete") {
+      const batchId = body.batchId as string | undefined;
+      const realImageCount = body.realImageCount as number | undefined;
+
+      if (!batchId || typeof realImageCount !== "number" || realImageCount < 0) {
+        return NextResponse.json({ error: "Invalid complete request." }, { status: 400 });
+      }
+
+      const { count, error: countError } = await supabase
+        .from("book_covers")
+        .select("id", { count: "exact", head: true })
+        .eq("batch_id", batchId)
+        .eq("book_id", bookId)
+        .eq("user_id", user.id);
+
+      if (countError || !count) {
+        return NextResponse.json({ error: "Cover batch not found." }, { status: 404 });
+      }
+
+      const charged = realImageCount > 0;
+
+      if (charged) {
+        await recordAiRequest(user.id, "cover", "success");
+      }
+
+      return NextResponse.json({
+        charged,
+        message: charged
+          ? undefined
+          : "No daily cover credit used because no AI images were generated.",
       });
     }
 
