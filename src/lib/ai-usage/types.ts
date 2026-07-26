@@ -14,7 +14,7 @@ export const RATE_LIMITS = {
   perHour: 20,
 } as const;
 
-export const COVER_COOLDOWN_MS = 60_000;
+export const COVER_COOLDOWN_MS = 12_000;
 
 export const FEATURE_LABELS: Record<AiFeature, string> = {
   chapter: "Chapter generations",

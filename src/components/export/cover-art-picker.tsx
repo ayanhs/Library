@@ -114,10 +114,6 @@ export function CoverArtPicker({
         setWarning(promptsBody.warning as string);
       }
 
-      if (promptsBody.pollinationsConfigured === false && promptsBody.warning) {
-        throw new Error(promptsBody.warning as string);
-      }
-
       const generated: BookCoverPreview[] = [];
       let fallbackCount = 0;
       let lastFallbackWarning = "";
@@ -166,7 +162,7 @@ export function CoverArtPicker({
       if (fallbackCount === options.length) {
         setWarning(
           lastFallbackWarning ||
-            "No AI cover images were generated. Your daily cover credit was not used — try again after Pollinations credits refresh or top up at enter.pollinations.ai."
+            "No AI cover images were generated. Your daily cover credit was not used — wait a minute and try again."
         );
       } else if (fallbackCount > 0) {
         setWarning(
@@ -191,7 +187,7 @@ export function CoverArtPicker({
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
         setError(
-          "Cover generation timed out. Add POLLINATIONS_API_KEY in Vercel for faster, reliable cover art (enter.pollinations.ai/keys)."
+          "Cover generation timed out. The free image service may be slow — please try again in a minute."
         );
       } else {
         setError(
@@ -257,8 +253,9 @@ export function CoverArtPicker({
             )}
           </p>
           <p className="mt-1 text-xs text-muted/80">
-            Each batch creates 3 images. Pollinations Pollen credits are separate
-            from this daily limit.
+            Uses free AI image generation (no API key required). Each batch
+            creates 3 images. Pollinations Pollen credits are only used if you
+            add an optional API key.
           </p>
         </div>
         <button
@@ -310,7 +307,7 @@ export function CoverArtPicker({
 
       {cooldownSeconds > 0 && !isGenerating && (
         <p className="text-xs text-amber-200/80">
-          Cover cooldown active — wait {cooldownSeconds}s before generating again.
+          Brief pause between batches — wait {cooldownSeconds}s before generating again.
         </p>
       )}
 

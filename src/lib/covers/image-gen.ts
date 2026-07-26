@@ -8,20 +8,15 @@ const COVER_HEIGHT = 1152;
 const COVER_WIDTH_VERCEL = 512;
 const COVER_HEIGHT_VERCEL = 768;
 
-const FETCH_TIMEOUT_MS = 55_000;
-const VERCEL_LEGACY_TIMEOUT_MS = 9_000;
-const AUTHED_DELAY_MS = 4_000;
-const ANONYMOUS_DELAY_MS = 8_000;
+const FETCH_TIMEOUT_MS = 45_000;
+/** Space between images in one batch — matches Pollinations free-tier pacing. */
+const IMAGE_DELAY_MS = 12_000;
 const MAX_ATTEMPTS = 2;
 
+const LEGACY_MODELS = ["flux", "turbo"] as const;
 const AUTHED_MODELS = ["klein", "flux", "zimage"] as const;
-const LEGACY_MODELS = ["flux"] as const;
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
-
-function isPaymentRequiredError(err: unknown): boolean {
-  return (err as Error & { status?: number }).status === 402;
-}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -37,27 +32,17 @@ export function isPollinationsConfigured(): boolean {
 }
 
 export function getCoverRequestDelayMs(): number {
-  return isPollinationsConfigured() ? AUTHED_DELAY_MS : ANONYMOUS_DELAY_MS;
+  return IMAGE_DELAY_MS;
 }
 
 export function getCoverGenerationConfig(): {
   requestDelayMs: number;
   pollinationsConfigured: boolean;
-  warning?: string;
 } {
-  const pollinationsConfigured = isPollinationsConfigured();
-  const requestDelayMs = getCoverRequestDelayMs();
-
-  if (process.env.VERCEL === "1" && !pollinationsConfigured) {
-    return {
-      requestDelayMs,
-      pollinationsConfigured,
-      warning:
-        "Cover art requires POLLINATIONS_API_KEY in Vercel environment variables. Get a free key at enter.pollinations.ai/keys, add it under Project Settings → Environment Variables, then redeploy.",
-    };
-  }
-
-  return { requestDelayMs, pollinationsConfigured };
+  return {
+    requestDelayMs: IMAGE_DELAY_MS,
+    pollinationsConfigured: isPollinationsConfigured(),
+  };
 }
 
 function getDimensions(): { width: number; height: number } {
@@ -66,14 +51,6 @@ function getDimensions(): { width: number; height: number } {
   }
 
   return { width: COVER_WIDTH, height: COVER_HEIGHT };
-}
-
-function getFetchTimeoutMs(): number {
-  if (process.env.VERCEL === "1" && !isPollinationsConfigured()) {
-    return VERCEL_LEGACY_TIMEOUT_MS;
-  }
-
-  return FETCH_TIMEOUT_MS;
 }
 
 function isRetryableError(err: unknown): boolean {
@@ -85,25 +62,9 @@ function isRetryableError(err: unknown): boolean {
   return status !== undefined && RETRYABLE_STATUSES.has(status);
 }
 
-function isFatalCoverError(message: string): boolean {
-  return (
-    message.includes("POLLINATIONS_API_KEY") ||
-    message.includes("missing or invalid") ||
-    message.includes("Authentication required")
-  );
-}
-
 function formatPollinationsError(status: number, detail?: string): string {
-  if (status === 401 || status === 403) {
-    return "Pollinations API key is missing or invalid. In Vercel, set POLLINATIONS_API_KEY to your secret key (sk_...) from enter.pollinations.ai/keys, then redeploy.";
-  }
-
-  if (status === 402) {
-    return "Pollinations image credits (Pollen) are used up. Free accounts get about 1.5 Pollen per week — one cover batch uses 3 images. Trying the free image tier instead, or top up at enter.pollinations.ai.";
-  }
-
   if (status === 429) {
-    return "The image service is rate limited. Wait a minute and try again.";
+    return "The free image service is busy. Wait a moment and try again.";
   }
 
   if (detail) {
@@ -131,6 +92,49 @@ function validateImageBuffer(buffer: Buffer): void {
   }
 }
 
+async function fetchLegacyCoverImage(
+  prompt: string,
+  seed: number,
+  model: string
+): Promise<Buffer> {
+  const { width, height } = getDimensions();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const url = new URL(`${LEGACY_BASE_URL}/${encodeURIComponent(prompt)}`);
+    url.searchParams.set("width", String(width));
+    url.searchParams.set("height", String(height));
+    url.searchParams.set("nologo", "true");
+    url.searchParams.set("seed", String(seed));
+    url.searchParams.set("model", model);
+    url.searchParams.set("private", "true");
+
+    const response = await fetch(url.toString(), {
+      signal: controller.signal,
+      headers: { Accept: "image/*" },
+    });
+
+    if (!response.ok) {
+      const detail = await parseErrorResponse(response);
+      const error = new Error(formatPollinationsError(response.status, detail));
+      (error as Error & { status?: number }).status = response.status;
+      throw error;
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.startsWith("image/")) {
+      throw new Error("Image service returned an unexpected response.");
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    validateImageBuffer(buffer);
+    return buffer;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchAuthenticatedCoverImagePost(
   prompt: string,
   model: string,
@@ -138,7 +142,7 @@ async function fetchAuthenticatedCoverImagePost(
 ): Promise<Buffer> {
   const { width, height } = getDimensions();
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getFetchTimeoutMs());
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${GEN_BASE_URL}/v1/images/generations`, {
@@ -182,155 +186,76 @@ async function fetchAuthenticatedCoverImagePost(
   }
 }
 
-async function fetchAuthenticatedCoverImageGet(
+async function tryLegacyModels(
   prompt: string,
-  seed: number,
-  model: string,
+  seed: number
+): Promise<Buffer | null> {
+  let lastError: string | undefined;
+
+  for (const model of LEGACY_MODELS) {
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      try {
+        return await fetchLegacyCoverImage(prompt, seed + attempt, model);
+      } catch (err) {
+        lastError =
+          err instanceof Error ? err.message : "Legacy cover generation failed.";
+
+        if (!isRetryableError(err) || attempt === MAX_ATTEMPTS - 1) {
+          break;
+        }
+
+        await sleep(Math.min(IMAGE_DELAY_MS, 4_000 * (attempt + 1)));
+      }
+    }
+  }
+
+  if (lastError) {
+    throw new Error(lastError);
+  }
+
+  return null;
+}
+
+async function tryAuthenticatedModels(
+  prompt: string,
   token: string
-): Promise<Buffer> {
-  const { width, height } = getDimensions();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getFetchTimeoutMs());
-
-  try {
-    const url = new URL(`${GEN_BASE_URL}/image/${encodeURIComponent(prompt)}`);
-    url.searchParams.set("model", model);
-    url.searchParams.set("width", String(width));
-    url.searchParams.set("height", String(height));
-    url.searchParams.set("seed", String(seed));
-    url.searchParams.set("key", token);
-
-    const response = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: {
-        Accept: "image/*",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const detail = await parseErrorResponse(response);
-      const error = new Error(formatPollinationsError(response.status, detail));
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
-    }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.startsWith("image/")) {
-      throw new Error("Image service returned an unexpected response.");
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    validateImageBuffer(buffer);
-    return buffer;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function fetchLegacyCoverImage(
-  prompt: string,
-  seed: number,
-  model: string
-): Promise<Buffer> {
-  const { width, height } = getDimensions();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getFetchTimeoutMs());
-
-  try {
-    const url = new URL(`${LEGACY_BASE_URL}/${encodeURIComponent(prompt)}`);
-    url.searchParams.set("width", String(width));
-    url.searchParams.set("height", String(height));
-    url.searchParams.set("nologo", "true");
-    url.searchParams.set("seed", String(seed));
-    url.searchParams.set("model", model);
-    url.searchParams.set("private", "true");
-
-    const response = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: { Accept: "image/*" },
-    });
-
-    if (!response.ok) {
-      const error = new Error(formatPollinationsError(response.status));
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    validateImageBuffer(buffer);
-    return buffer;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function fetchLegacyCoverImageLocalOnly(
-  prompt: string,
-  seed: number,
-  model: string
-): Promise<Buffer> {
-  if (process.env.VERCEL === "1") {
-    throw new Error(
-      "Cover art requires POLLINATIONS_API_KEY on Vercel. Add your secret key (sk_...) under Project Settings → Environment Variables, then redeploy."
-    );
-  }
-
-  return fetchLegacyCoverImage(prompt, seed, model);
-}
-
-async function fetchCoverImageOnce(
-  prompt: string,
-  seed: number,
-  model: string,
-  token?: string
-): Promise<Buffer> {
-  if (token) {
+): Promise<Buffer | null> {
+  for (const model of AUTHED_MODELS) {
     try {
       return await fetchAuthenticatedCoverImagePost(prompt, model, token);
-    } catch (postError) {
-      if (isPaymentRequiredError(postError)) {
-        throw postError;
-      }
-
-      if (!isRetryableError(postError)) {
-        const message =
-          postError instanceof Error ? postError.message : "Cover generation failed.";
-        if (isFatalCoverError(message)) {
-          throw postError;
-        }
-      }
-
-      try {
-        return await fetchAuthenticatedCoverImageGet(prompt, seed, model, token);
-      } catch (getError) {
-        if (isPaymentRequiredError(getError)) {
-          throw getError;
-        }
-        throw getError;
-      }
+    } catch {
+      continue;
     }
   }
 
-  return fetchLegacyCoverImageLocalOnly(prompt, seed, model);
+  return null;
 }
 
-async function tryLegacyFreeTier(
+export async function fetchSingleCoverImage(
   prompt: string,
   seed: number,
-  style: string,
-  becausePaymentRequired: boolean
+  style: string
 ): Promise<{ buffer: Buffer; usedFallback: boolean; errorMessage?: string }> {
+  const token = getPollinationsToken();
+
   try {
-    const buffer = await fetchLegacyCoverImage(prompt, seed, "flux");
-    return {
-      buffer,
-      usedFallback: false,
-      errorMessage: becausePaymentRequired
-        ? "Used Pollinations free image tier because Pollen credits are used up. Your app still has cover generations left, but Pollinations charges ~1 Pollen per image. Top up at enter.pollinations.ai or wait for the weekly free grant."
-        : undefined,
-    };
+    const legacyBuffer = await tryLegacyModels(prompt, seed);
+    if (legacyBuffer) {
+      return { buffer: legacyBuffer, usedFallback: false };
+    }
   } catch (legacyError) {
+    if (token) {
+      const authedBuffer = await tryAuthenticatedModels(prompt, token);
+      if (authedBuffer) {
+        return {
+          buffer: authedBuffer,
+          usedFallback: false,
+          errorMessage:
+            "Used premium Pollinations tier because the free tier was busy.",
+        };
+      }
+    }
+
     return {
       buffer: createFallbackCoverImage(style, seed),
       usedFallback: true,
@@ -340,64 +265,18 @@ async function tryLegacyFreeTier(
           : "Free image tier unavailable.",
     };
   }
-}
 
-export async function fetchSingleCoverImage(
-  prompt: string,
-  seed: number,
-  style: string
-): Promise<{ buffer: Buffer; usedFallback: boolean; errorMessage?: string }> {
-  const token = getPollinationsToken();
-  const models = token ? AUTHED_MODELS : LEGACY_MODELS;
-  let lastError: string | undefined;
-  let paymentRequired = false;
-
-  for (const model of models) {
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      try {
-        const buffer = await fetchCoverImageOnce(
-          prompt,
-          seed + attempt,
-          model,
-          token
-        );
-        return { buffer, usedFallback: false };
-      } catch (err) {
-        if (isPaymentRequiredError(err)) {
-          paymentRequired = true;
-          lastError =
-            err instanceof Error ? err.message : "Pollinations credits used up.";
-          break;
-        }
-
-        lastError =
-          err instanceof Error ? err.message : "Cover image generation failed.";
-
-        if (isFatalCoverError(lastError)) {
-          throw err instanceof Error ? err : new Error(lastError);
-        }
-
-        if (!isRetryableError(err) || attempt === MAX_ATTEMPTS - 1) {
-          break;
-        }
-
-        await sleep(Math.min(8_000, 2_000 * (attempt + 1)));
-      }
+  if (token) {
+    const authedBuffer = await tryAuthenticatedModels(prompt, token);
+    if (authedBuffer) {
+      return { buffer: authedBuffer, usedFallback: false };
     }
-
-    if (paymentRequired) {
-      break;
-    }
-  }
-
-  if (paymentRequired) {
-    return tryLegacyFreeTier(prompt, seed, style, true);
   }
 
   return {
     buffer: createFallbackCoverImage(style, seed),
     usedFallback: true,
-    errorMessage: lastError,
+    errorMessage: "Could not generate a cover image. Please try again.",
   };
 }
 
@@ -406,14 +285,13 @@ export async function fetchCoverImages(
   styles: string[]
 ): Promise<{ buffers: Buffer[]; fallbackCount: number; lastError?: string }> {
   const baseSeed = Date.now();
-  const delayMs = getCoverRequestDelayMs();
   const buffers: Buffer[] = [];
   let fallbackCount = 0;
   let lastError: string | undefined;
 
   for (let index = 0; index < prompts.length; index++) {
     if (index > 0) {
-      await sleep(delayMs);
+      await sleep(IMAGE_DELAY_MS);
     }
 
     const result = await fetchSingleCoverImage(
@@ -433,5 +311,5 @@ export async function fetchCoverImages(
 }
 
 export async function waitBetweenCoverRequests(): Promise<void> {
-  await sleep(getCoverRequestDelayMs());
+  await sleep(IMAGE_DELAY_MS);
 }
