@@ -153,10 +153,10 @@ export function CoverArtPicker({
 
         if (imageBody.usedFallback) {
           fallbackCount += 1;
-          if (imageBody.warning) {
-            lastFallbackWarning = imageBody.warning as string;
-            setWarning(lastFallbackWarning);
-          }
+        }
+        if (imageBody.warning) {
+          lastFallbackWarning = imageBody.warning as string;
+          setWarning(lastFallbackWarning);
         }
 
         generated.push(imageBody.cover as BookCoverPreview);
@@ -238,9 +238,13 @@ export function CoverArtPicker({
             selection before exporting.
             {coverRemaining && (
               <span className="ml-1 text-purple-light">
-                ({coverRemaining.remaining}/{coverRemaining.limit} left today)
+                ({coverRemaining.remaining}/{coverRemaining.limit} batches left today)
               </span>
             )}
+          </p>
+          <p className="mt-1 text-xs text-muted/80">
+            Each batch creates 3 images. Pollinations Pollen credits are separate
+            from this daily limit.
           </p>
         </div>
         <button

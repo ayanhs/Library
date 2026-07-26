@@ -184,7 +184,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({
         cover: preview,
         usedFallback,
-        warning: usedFallback ? errorMessage : undefined,
+        warning: errorMessage,
       });
     }
 

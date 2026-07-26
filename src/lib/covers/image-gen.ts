@@ -19,6 +19,10 @@ const LEGACY_MODELS = ["flux"] as const;
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
 
+function isPaymentRequiredError(err: unknown): boolean {
+  return (err as Error & { status?: number }).status === 402;
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -85,7 +89,6 @@ function isFatalCoverError(message: string): boolean {
   return (
     message.includes("POLLINATIONS_API_KEY") ||
     message.includes("missing or invalid") ||
-    message.includes("out of credits") ||
     message.includes("Authentication required")
   );
 }
@@ -96,7 +99,7 @@ function formatPollinationsError(status: number, detail?: string): string {
   }
 
   if (status === 402) {
-    return "Pollinations account is out of credits. Top up at enter.pollinations.ai.";
+    return "Pollinations image credits (Pollen) are used up. Free accounts get about 1.5 Pollen per week — one cover batch uses 3 images. Trying the free image tier instead, or top up at enter.pollinations.ai.";
   }
 
   if (status === 429) {
@@ -230,12 +233,6 @@ async function fetchLegacyCoverImage(
   seed: number,
   model: string
 ): Promise<Buffer> {
-  if (process.env.VERCEL === "1") {
-    throw new Error(
-      "Cover art requires POLLINATIONS_API_KEY on Vercel. Add your secret key (sk_...) under Project Settings → Environment Variables, then redeploy."
-    );
-  }
-
   const { width, height } = getDimensions();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), getFetchTimeoutMs());
@@ -268,6 +265,20 @@ async function fetchLegacyCoverImage(
   }
 }
 
+async function fetchLegacyCoverImageLocalOnly(
+  prompt: string,
+  seed: number,
+  model: string
+): Promise<Buffer> {
+  if (process.env.VERCEL === "1") {
+    throw new Error(
+      "Cover art requires POLLINATIONS_API_KEY on Vercel. Add your secret key (sk_...) under Project Settings → Environment Variables, then redeploy."
+    );
+  }
+
+  return fetchLegacyCoverImage(prompt, seed, model);
+}
+
 async function fetchCoverImageOnce(
   prompt: string,
   seed: number,
@@ -278,6 +289,10 @@ async function fetchCoverImageOnce(
     try {
       return await fetchAuthenticatedCoverImagePost(prompt, model, token);
     } catch (postError) {
+      if (isPaymentRequiredError(postError)) {
+        throw postError;
+      }
+
       if (!isRetryableError(postError)) {
         const message =
           postError instanceof Error ? postError.message : "Cover generation failed.";
@@ -286,11 +301,45 @@ async function fetchCoverImageOnce(
         }
       }
 
-      return await fetchAuthenticatedCoverImageGet(prompt, seed, model, token);
+      try {
+        return await fetchAuthenticatedCoverImageGet(prompt, seed, model, token);
+      } catch (getError) {
+        if (isPaymentRequiredError(getError)) {
+          throw getError;
+        }
+        throw getError;
+      }
     }
   }
 
-  return fetchLegacyCoverImage(prompt, seed, model);
+  return fetchLegacyCoverImageLocalOnly(prompt, seed, model);
+}
+
+async function tryLegacyFreeTier(
+  prompt: string,
+  seed: number,
+  style: string,
+  becausePaymentRequired: boolean
+): Promise<{ buffer: Buffer; usedFallback: boolean; errorMessage?: string }> {
+  try {
+    const buffer = await fetchLegacyCoverImage(prompt, seed, "flux");
+    return {
+      buffer,
+      usedFallback: false,
+      errorMessage: becausePaymentRequired
+        ? "Used Pollinations free image tier because Pollen credits are used up. Your app still has cover generations left, but Pollinations charges ~1 Pollen per image. Top up at enter.pollinations.ai or wait for the weekly free grant."
+        : undefined,
+    };
+  } catch (legacyError) {
+    return {
+      buffer: createFallbackCoverImage(style, seed),
+      usedFallback: true,
+      errorMessage:
+        legacyError instanceof Error
+          ? legacyError.message
+          : "Free image tier unavailable.",
+    };
+  }
 }
 
 export async function fetchSingleCoverImage(
@@ -301,6 +350,7 @@ export async function fetchSingleCoverImage(
   const token = getPollinationsToken();
   const models = token ? AUTHED_MODELS : LEGACY_MODELS;
   let lastError: string | undefined;
+  let paymentRequired = false;
 
   for (const model of models) {
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
@@ -313,6 +363,13 @@ export async function fetchSingleCoverImage(
         );
         return { buffer, usedFallback: false };
       } catch (err) {
+        if (isPaymentRequiredError(err)) {
+          paymentRequired = true;
+          lastError =
+            err instanceof Error ? err.message : "Pollinations credits used up.";
+          break;
+        }
+
         lastError =
           err instanceof Error ? err.message : "Cover image generation failed.";
 
@@ -327,6 +384,14 @@ export async function fetchSingleCoverImage(
         await sleep(Math.min(8_000, 2_000 * (attempt + 1)));
       }
     }
+
+    if (paymentRequired) {
+      break;
+    }
+  }
+
+  if (paymentRequired) {
+    return tryLegacyFreeTier(prompt, seed, style, true);
   }
 
   return {
