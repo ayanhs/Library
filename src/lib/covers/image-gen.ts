@@ -17,6 +17,17 @@ const LEGACY_MODELS = ["flux", "turbo"] as const;
 const AUTHED_MODELS = ["klein", "flux", "zimage"] as const;
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+/** Pollinations query API max seed (32-bit signed integer). */
+const POLLINATIONS_MAX_SEED = 2_147_483_647;
+
+function normalizePollinationsSeed(seed: number): number {
+  const normalized = Math.abs(Math.floor(seed)) % POLLINATIONS_MAX_SEED;
+  return normalized === 0 ? 1 : normalized;
+}
+
+export function createCoverImageSeed(index = 0): number {
+  return normalizePollinationsSeed(Date.now() + index * 997);
+}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -106,7 +117,7 @@ async function fetchLegacyCoverImage(
     url.searchParams.set("width", String(width));
     url.searchParams.set("height", String(height));
     url.searchParams.set("nologo", "true");
-    url.searchParams.set("seed", String(seed));
+    url.searchParams.set("seed", String(normalizePollinationsSeed(seed)));
     url.searchParams.set("model", model);
     url.searchParams.set("private", "true");
 
@@ -284,7 +295,6 @@ export async function fetchCoverImages(
   prompts: string[],
   styles: string[]
 ): Promise<{ buffers: Buffer[]; fallbackCount: number; lastError?: string }> {
-  const baseSeed = Date.now();
   const buffers: Buffer[] = [];
   let fallbackCount = 0;
   let lastError: string | undefined;
@@ -296,7 +306,7 @@ export async function fetchCoverImages(
 
     const result = await fetchSingleCoverImage(
       prompts[index],
-      baseSeed + index * 997,
+      createCoverImageSeed(index),
       styles[index] ?? `Cover ${index + 1}`
     );
 

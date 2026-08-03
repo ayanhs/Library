@@ -4,7 +4,11 @@ import { getBookById } from "@/lib/books/queries";
 import { getBlueprintByBookId } from "@/lib/blueprint/queries";
 import { assertAiUsageAllowed } from "@/lib/ai-usage/with-guard";
 import { recordAiRequest } from "@/lib/ai-usage/guard";
-import { fetchSingleCoverImage, getCoverGenerationConfig } from "@/lib/covers/image-gen";
+import {
+  createCoverImageSeed,
+  fetchSingleCoverImage,
+  getCoverGenerationConfig,
+} from "@/lib/covers/image-gen";
 import { generateCoverPromptsWithAI } from "@/lib/covers/openai";
 import { toCoverPreviews } from "@/lib/covers/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -141,7 +145,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({ error: "Book not found." }, { status: 404 });
       }
 
-      const seed = Date.now() + index * 997;
+      const seed = createCoverImageSeed(index);
       let buffer: Buffer;
       let usedFallback = false;
       let errorMessage: string | undefined;
