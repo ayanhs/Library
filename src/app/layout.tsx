@@ -10,8 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AI Publishing Studio",
-  description: "Create, publish, and manage your books with AI-powered tools",
+  title: "AI Publishing Studio — Write Your Book with AI",
+  description:
+    "Go from story idea to publish-ready manuscript. AI blueprint, chapter writing, story bible, editor, cover art, and PDF/DOCX/EPUB export.",
 };
 
 export const viewport: Viewport = {
