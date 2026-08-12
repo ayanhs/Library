@@ -54,6 +54,23 @@ function pageBreak(): Paragraph {
   return new Paragraph({ children: [new PageBreak()] });
 }
 
+function authorOnCoverParagraph(authorName: string): Paragraph {
+  return new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 2400, after: 120 },
+    shading: { fill: "1A1A1A", color: "auto" },
+    children: [
+      new TextRun({
+        text: authorName,
+        bold: true,
+        font: "Times New Roman",
+        size: 28,
+        color: "FFFFFF",
+      }),
+    ],
+  });
+}
+
 function buildFrontMatter(data: ExportBookData): Paragraph[] {
   const children: Paragraph[] = [];
 
@@ -72,20 +89,16 @@ function buildFrontMatter(data: ExportBookData): Paragraph[] {
         ],
       })
     );
-    children.push(new Paragraph({ spacing: { before: 2800 } }));
-    children.push(centered(data.authorName, 24));
+    children.push(authorOnCoverParagraph(data.authorName));
   } else {
     children.push(new Paragraph({ spacing: { before: 3000 } }));
     children.push(centered(data.title, 56, true));
-    children.push(new Paragraph({ spacing: { before: 3200 } }));
-    children.push(centered(data.authorName, 32));
+    children.push(authorOnCoverParagraph(data.authorName));
   }
 
-  // Page 2 — blank
   children.push(pageBreak());
   children.push(new Paragraph({ children: [new TextRun({ text: "" })] }));
 
-  // Page 3 — summary
   children.push(pageBreak());
   children.push(
     new Paragraph({
@@ -102,6 +115,35 @@ function buildFrontMatter(data: ExportBookData): Paragraph[] {
   );
   if (data.description) {
     children.push(...bodyParagraphs(data.description));
+  }
+
+  children.push(pageBreak());
+  children.push(
+    new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      children: [
+        new TextRun({
+          text: "Table of Contents",
+          bold: true,
+          font: "Times New Roman",
+          size: 32,
+        }),
+      ],
+    })
+  );
+  for (const chapter of data.chapters) {
+    children.push(
+      new Paragraph({
+        spacing: { after: 120 },
+        children: [
+          new TextRun({
+            text: `Chapter ${chapter.number}: ${chapter.title}`,
+            font: "Times New Roman",
+            size: 24,
+          }),
+        ],
+      })
+    );
   }
 
   return children;
@@ -183,6 +225,12 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
           }),
         },
         children: buildChapters(data),
+      },
+      {
+        properties: {
+          page: { margin: PAGE_MARGIN },
+        },
+        children: [new Paragraph({ children: [new TextRun({ text: "" })] })],
       },
     ],
   });

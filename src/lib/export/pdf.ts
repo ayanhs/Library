@@ -34,23 +34,61 @@ function addParagraphs(
   }
 }
 
+/** Rough bottom-band luminance for PNG/JPEG buffers — defaults to dark if unknown. */
+function estimateBottomBandIsLight(imageBuffer: Buffer): boolean {
+  if (imageBuffer[0] === 0x89 && imageBuffer[1] === 0x50) {
+    let sum = 0;
+    let samples = 0;
+    const start = Math.max(0, imageBuffer.length - 24_000);
+    for (let i = start; i < imageBuffer.length - 3; i += 4) {
+      sum += imageBuffer[i] + imageBuffer[i + 1] + imageBuffer[i + 2];
+      samples += 1;
+    }
+    if (samples === 0) return false;
+    return sum / samples / 3 > 150;
+  }
+
+  return false;
+}
+
+function drawAdaptiveAuthorOnCover(
+  doc: PdfDoc,
+  authorName: string,
+  coverBuffer?: Buffer
+) {
+  const bandTop = PAGE_HEIGHT - 130;
+  const isLight = coverBuffer ? estimateBottomBandIsLight(coverBuffer) : false;
+  const scrimColor = isLight ? "#ffffff" : "#000000";
+  const textColor = isLight ? "#111111" : "#ffffff";
+  const shadowColor = isLight ? "#ffffff" : "#000000";
+
+  doc.save();
+  doc.opacity(isLight ? 0.82 : 0.72);
+  doc.rect(0, bandTop, PAGE_WIDTH, PAGE_HEIGHT - bandTop).fill(scrimColor);
+  doc.restore();
+
+  const textY = PAGE_HEIGHT - 68;
+  const textOptions = {
+    width: CONTENT_WIDTH,
+    align: "center" as const,
+    lineBreak: false,
+  };
+
+  doc.font("Times-Bold").fontSize(18);
+  doc.fillColor(shadowColor);
+  doc.text(authorName, MARGIN + 1, textY + 1, textOptions);
+  doc.fillColor(textColor);
+  doc.text(authorName, MARGIN, textY, textOptions);
+  doc.fillColor("#000000");
+}
+
 function addCoverPage(doc: PdfDoc, data: ExportBookData) {
   if (data.coverImage) {
     doc.image(data.coverImage.buffer, 0, 0, {
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT,
     });
-    doc.save();
-    doc.opacity(0.45);
-    doc.rect(0, PAGE_HEIGHT - 100, PAGE_WIDTH, 100).fill("#000000");
-    doc.restore();
-    doc.font("Times-Roman").fontSize(16).fillColor("#ffffff");
-    doc.text(data.authorName, MARGIN, PAGE_HEIGHT - 72, {
-      width: CONTENT_WIDTH,
-      align: "center",
-      lineBreak: false,
-    });
-    doc.fillColor("#000000");
+    drawAdaptiveAuthorOnCover(doc, data.authorName, data.coverImage.buffer);
     return;
   }
 
@@ -59,12 +97,21 @@ function addCoverPage(doc: PdfDoc, data: ExportBookData) {
     width: CONTENT_WIDTH,
     align: "center",
   });
-  doc.font("Times-Roman").fontSize(16);
-  doc.text(data.authorName, MARGIN, PAGE_HEIGHT - 72, {
-    width: CONTENT_WIDTH,
-    align: "center",
-    lineBreak: false,
-  });
+  drawAdaptiveAuthorOnCover(doc, data.authorName);
+}
+
+function addTableOfContents(doc: PdfDoc, data: ExportBookData) {
+  doc.addPage();
+  doc.font("Times-Bold").fontSize(22);
+  doc.text("Table of Contents", MARGIN, MARGIN, { width: CONTENT_WIDTH });
+  doc.moveDown(1.5);
+  doc.font("Times-Roman").fontSize(12);
+  for (const chapter of data.chapters) {
+    doc.text(`Chapter ${chapter.number}: ${chapter.title}`, {
+      width: CONTENT_WIDTH,
+    });
+    doc.moveDown(0.4);
+  }
 }
 
 function addCenteredPageNumber(doc: PdfDoc, pageNum: number) {
@@ -75,6 +122,11 @@ function addCenteredPageNumber(doc: PdfDoc, pageNum: number) {
     lineBreak: false,
   });
   doc.fillColor("#000000");
+}
+
+function getNextPageIndex(doc: PdfDoc): number {
+  const range = doc.bufferedPageRange();
+  return range.start + range.count;
 }
 
 export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
@@ -91,13 +143,10 @@ export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Page 1 — cover art (or title fallback) with author at the bottom
     addCoverPage(doc, data);
 
-    // Page 2 — intentionally blank
     doc.addPage();
 
-    // Page 3 — summary
     doc.addPage();
     doc.font("Times-Bold").fontSize(20);
     doc.text("Summary", MARGIN, MARGIN, { width: CONTENT_WIDTH });
@@ -106,10 +155,10 @@ export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
       addParagraphs(doc, data.description, { fontSize: 11 });
     }
 
-    const chapterStartPage =
-      doc.bufferedPageRange().start + doc.bufferedPageRange().count;
+    addTableOfContents(doc, data);
 
-    // Chapters — page numbers on every page from here
+    const bodyStartPage = getNextPageIndex(doc);
+
     for (const chapter of data.chapters) {
       doc.addPage();
       doc.font("Times-Bold").fontSize(20);
@@ -121,10 +170,13 @@ export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
       addParagraphs(doc, chapter.content);
     }
 
-    const range = doc.bufferedPageRange();
-    for (let i = chapterStartPage; i < range.start + range.count; i++) {
+    const bodyEndPage = getNextPageIndex(doc) - 1;
+
+    doc.addPage();
+
+    for (let i = bodyStartPage; i <= bodyEndPage; i++) {
       doc.switchToPage(i);
-      addCenteredPageNumber(doc, i - chapterStartPage + 1);
+      addCenteredPageNumber(doc, i - bodyStartPage + 1);
     }
 
     doc.end();
