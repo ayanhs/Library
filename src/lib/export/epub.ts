@@ -31,23 +31,20 @@ export async function generateEpubExport(data: ExportBookData): Promise<Buffer> 
   }
 
   const coverHtml = data.coverImage
-    ? `<div style="text-align:center;">
-        <img src="data:${data.coverImage.mimeType};base64,${data.coverImage.buffer.toString("base64")}" alt="${escapeHtml(data.title)}" style="width:100%;max-width:100%;height:auto;" />
-        <h1 style="margin-top:1.5em;">${escapeHtml(data.title)}</h1>
-        <p style="font-size:1.1em;">${escapeHtml(data.authorName)}</p>
+    ? `<div style="text-align:center;min-height:90vh;display:flex;flex-direction:column;justify-content:space-between;">
+        <img src="data:${data.coverImage.mimeType};base64,${data.coverImage.buffer.toString("base64")}" alt="Cover" style="width:100%;max-width:100%;height:auto;" />
+        <p style="font-size:1.1em;margin:2em 0 1em;">${escapeHtml(data.authorName)}</p>
       </div>`
-    : `<div style="text-align:center;padding-top:30%;">
+    : `<div style="text-align:center;min-height:90vh;display:flex;flex-direction:column;justify-content:space-between;padding-top:30%;">
       <h1>${escapeHtml(data.title)}</h1>
-      <p style="font-size:1.2em;margin-top:2em;">${escapeHtml(data.authorName)}</p>
-      ${data.genre ? `<p style="color:#666;">${escapeHtml(data.genre)}</p>` : ""}
+      <p style="font-size:1.2em;margin:2em 0 1em;">${escapeHtml(data.authorName)}</p>
     </div>`;
 
-  const titlePageHtml = `
-    <div style="text-align:center;padding-top:20%;">
-      <h1>${escapeHtml(data.title)}</h1>
-      <p style="font-size:1.1em;">by ${escapeHtml(data.authorName)}</p>
-    </div>
-    ${data.description ? `<div style="margin-top:3em;">${proseToHtml(data.description)}</div>` : ""}`;
+  const blankPageHtml = `<div style="min-height:90vh;"></div>`;
+
+  const summaryHtml = `
+    <h1>Summary</h1>
+    ${data.description ? proseToHtml(data.description) : ""}`;
 
   const content = [
     {
@@ -57,8 +54,14 @@ export async function generateEpubExport(data: ExportBookData): Promise<Buffer> 
       excludeFromToc: true,
     },
     {
-      title: "Title Page",
-      content: titlePageHtml,
+      title: "Blank",
+      content: blankPageHtml,
+      beforeToc: true,
+      excludeFromToc: true,
+    },
+    {
+      title: "Summary",
+      content: summaryHtml,
       beforeToc: true,
       excludeFromToc: true,
     },

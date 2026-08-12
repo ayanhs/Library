@@ -12,6 +12,8 @@ import {
 } from "docx";
 import type { ExportBookData } from "@/lib/export/types";
 
+const PAGE_MARGIN = { top: 1440, right: 1440, bottom: 1440, left: 1440 };
+
 function bodyParagraphs(text: string): Paragraph[] {
   return text
     .split(/\n\s*\n/)
@@ -48,16 +50,19 @@ function centered(text: string, size: number, bold = false): Paragraph {
   });
 }
 
-export async function generateDocxExport(data: ExportBookData): Promise<Buffer> {
+function pageBreak(): Paragraph {
+  return new Paragraph({ children: [new PageBreak()] });
+}
+
+function buildFrontMatter(data: ExportBookData): Paragraph[] {
   const children: Paragraph[] = [];
 
-  // Cover
   if (data.coverImage) {
     const coverType = data.coverImage.mimeType.includes("png") ? "png" : "jpg";
     children.push(
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        spacing: { before: 0, after: 120 },
+        spacing: { before: 0, after: 0 },
         children: [
           new ImageRun({
             type: coverType,
@@ -67,35 +72,27 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
         ],
       })
     );
-    children.push(centered(data.title, 40, true));
+    children.push(new Paragraph({ spacing: { before: 2800 } }));
     children.push(centered(data.authorName, 24));
   } else {
     children.push(new Paragraph({ spacing: { before: 3000 } }));
     children.push(centered(data.title, 56, true));
+    children.push(new Paragraph({ spacing: { before: 3200 } }));
     children.push(centered(data.authorName, 32));
-    if (data.genre) {
-      children.push(centered(data.genre, 22));
-    }
   }
-  children.push(new Paragraph({ children: [new PageBreak()] }));
 
-  // Title page
-  children.push(new Paragraph({ spacing: { before: 2000 } }));
-  children.push(centered(data.title, 48, true));
-  children.push(centered(`by ${data.authorName}`, 28));
-  if (data.description) {
-    children.push(new Paragraph({ spacing: { before: 400 } }));
-    children.push(...bodyParagraphs(data.description));
-  }
-  children.push(new Paragraph({ children: [new PageBreak()] }));
+  // Page 2 — blank
+  children.push(pageBreak());
+  children.push(new Paragraph({ children: [new TextRun({ text: "" })] }));
 
-  // Table of contents
+  // Page 3 — summary
+  children.push(pageBreak());
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
       children: [
         new TextRun({
-          text: "Table of Contents",
+          text: "Summary",
           bold: true,
           font: "Times New Roman",
           size: 32,
@@ -103,24 +100,23 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
       ],
     })
   );
-  for (const chapter of data.chapters) {
-    children.push(
-      new Paragraph({
-        spacing: { after: 120 },
-        children: [
-          new TextRun({
-            text: `Chapter ${chapter.number}: ${chapter.title}`,
-            font: "Times New Roman",
-            size: 24,
-          }),
-        ],
-      })
-    );
+  if (data.description) {
+    children.push(...bodyParagraphs(data.description));
   }
-  children.push(new Paragraph({ children: [new PageBreak()] }));
 
-  // Chapters
-  for (const chapter of data.chapters) {
+  return children;
+}
+
+function buildChapters(data: ExportBookData): Paragraph[] {
+  const children: Paragraph[] = [];
+
+  for (let index = 0; index < data.chapters.length; index++) {
+    const chapter = data.chapters[index];
+
+    if (index > 0) {
+      children.push(pageBreak());
+    }
+
     children.push(
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
@@ -149,15 +145,25 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
       })
     );
     children.push(...bodyParagraphs(chapter.content));
-    children.push(new Paragraph({ children: [new PageBreak()] }));
   }
 
+  return children;
+}
+
+export async function generateDocxExport(data: ExportBookData): Promise<Buffer> {
   const doc = new Document({
     sections: [
       {
         properties: {
+          page: { margin: PAGE_MARGIN },
+        },
+        children: buildFrontMatter(data),
+      },
+      {
+        properties: {
           page: {
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+            margin: PAGE_MARGIN,
+            pageNumbers: { start: 1 },
           },
         },
         footers: {
@@ -167,7 +173,7 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    children: ["Page ", PageNumber.CURRENT],
+                    children: [PageNumber.CURRENT],
                     font: "Times New Roman",
                     size: 20,
                   }),
@@ -176,7 +182,7 @@ export async function generateDocxExport(data: ExportBookData): Promise<Buffer> 
             ],
           }),
         },
-        children,
+        children: buildChapters(data),
       },
     ],
   });

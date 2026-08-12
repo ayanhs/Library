@@ -30,7 +30,7 @@ export const EXPORT_FORMATS: {
   {
     id: "pdf",
     label: "Export PDF",
-    description: "Print-ready PDF with cover, TOC, and page numbers",
+    description: "Print-ready PDF with cover, summary, and page numbers",
     mime: "application/pdf",
     extension: "pdf",
   },

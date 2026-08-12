@@ -8,6 +8,7 @@ const PAGE_WIDTH = 612;
 const PAGE_HEIGHT = 792;
 const MARGIN = 72;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
+const FOOTER_Y = PAGE_HEIGHT - MARGIN;
 
 type PdfDoc = InstanceType<typeof PDFDocument>;
 
@@ -33,6 +34,49 @@ function addParagraphs(
   }
 }
 
+function addCoverPage(doc: PdfDoc, data: ExportBookData) {
+  if (data.coverImage) {
+    doc.image(data.coverImage.buffer, 0, 0, {
+      width: PAGE_WIDTH,
+      height: PAGE_HEIGHT,
+    });
+    doc.save();
+    doc.opacity(0.45);
+    doc.rect(0, PAGE_HEIGHT - 100, PAGE_WIDTH, 100).fill("#000000");
+    doc.restore();
+    doc.font("Times-Roman").fontSize(16).fillColor("#ffffff");
+    doc.text(data.authorName, MARGIN, PAGE_HEIGHT - 72, {
+      width: CONTENT_WIDTH,
+      align: "center",
+      lineBreak: false,
+    });
+    doc.fillColor("#000000");
+    return;
+  }
+
+  doc.font("Times-Bold").fontSize(34);
+  doc.text(data.title, MARGIN, PAGE_HEIGHT * 0.35, {
+    width: CONTENT_WIDTH,
+    align: "center",
+  });
+  doc.font("Times-Roman").fontSize(16);
+  doc.text(data.authorName, MARGIN, PAGE_HEIGHT - 72, {
+    width: CONTENT_WIDTH,
+    align: "center",
+    lineBreak: false,
+  });
+}
+
+function addCenteredPageNumber(doc: PdfDoc, pageNum: number) {
+  doc.font("Times-Roman").fontSize(10).fillColor("#666666");
+  doc.text(String(pageNum), MARGIN, FOOTER_Y, {
+    width: CONTENT_WIDTH,
+    align: "center",
+    lineBreak: false,
+  });
+  doc.fillColor("#000000");
+}
+
 export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -47,67 +91,25 @@ export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    if (data.coverImage) {
-      doc.image(data.coverImage.buffer, 0, 0, {
-        width: PAGE_WIDTH,
-        height: PAGE_HEIGHT,
-      });
-      doc.save();
-      doc.opacity(0.55);
-      doc.rect(0, PAGE_HEIGHT - 170, PAGE_WIDTH, 170).fill("#000000");
-      doc.restore();
-      doc.font("Times-Bold").fontSize(26).fillColor("#ffffff");
-      doc.text(data.title, MARGIN, PAGE_HEIGHT - 130, {
-        width: CONTENT_WIDTH,
-        align: "center",
-      });
-      doc.font("Times-Roman").fontSize(14);
-      doc.text(data.authorName, MARGIN, doc.y + 8, {
-        width: CONTENT_WIDTH,
-        align: "center",
-      });
-      doc.fillColor("#000000");
-    } else {
-      doc.font("Times-Bold").fontSize(34);
-      doc.text(data.title, MARGIN, PAGE_HEIGHT * 0.35, {
-        width: CONTENT_WIDTH,
-        align: "center",
-      });
-      doc.moveDown(2);
-      doc.font("Times-Roman").fontSize(16);
-      doc.text(data.authorName, { width: CONTENT_WIDTH, align: "center" });
-      if (data.genre) {
-        doc.moveDown(1);
-        doc.fontSize(12).fillColor("#555555");
-        doc.text(data.genre, { width: CONTENT_WIDTH, align: "center" });
-        doc.fillColor("#000000");
-      }
-    }
+    // Page 1 — cover art (or title fallback) with author at the bottom
+    addCoverPage(doc, data);
 
+    // Page 2 — intentionally blank
     doc.addPage();
-    doc.font("Times-Bold").fontSize(28);
-    doc.text(data.title, { width: CONTENT_WIDTH, align: "center" });
-    doc.moveDown(1.5);
-    doc.font("Times-Roman").fontSize(14);
-    doc.text(`by ${data.authorName}`, { width: CONTENT_WIDTH, align: "center" });
+
+    // Page 3 — summary
+    doc.addPage();
+    doc.font("Times-Bold").fontSize(20);
+    doc.text("Summary", MARGIN, MARGIN, { width: CONTENT_WIDTH });
+    doc.moveDown(1);
     if (data.description) {
-      doc.moveDown(2);
-      doc.fontSize(11);
       addParagraphs(doc, data.description, { fontSize: 11 });
     }
 
-    doc.addPage();
-    doc.font("Times-Bold").fontSize(22);
-    doc.text("Table of Contents", MARGIN, MARGIN);
-    doc.moveDown(1.5);
-    doc.font("Times-Roman").fontSize(12);
-    for (const chapter of data.chapters) {
-      doc.text(`Chapter ${chapter.number}: ${chapter.title}`, {
-        width: CONTENT_WIDTH,
-      });
-      doc.moveDown(0.4);
-    }
+    const chapterStartPage =
+      doc.bufferedPageRange().start + doc.bufferedPageRange().count;
 
+    // Chapters — page numbers on every page from here
     for (const chapter of data.chapters) {
       doc.addPage();
       doc.font("Times-Bold").fontSize(20);
@@ -120,17 +122,9 @@ export async function generatePdfExport(data: ExportBookData): Promise<Buffer> {
     }
 
     const range = doc.bufferedPageRange();
-    for (let i = range.start; i < range.start + range.count; i++) {
+    for (let i = chapterStartPage; i < range.start + range.count; i++) {
       doc.switchToPage(i);
-      if (i === range.start) continue;
-      const pageNum = i - range.start;
-      doc.font("Times-Roman").fontSize(10).fillColor("#666666");
-      doc.text(String(pageNum), MARGIN, PAGE_HEIGHT - MARGIN, {
-        width: CONTENT_WIDTH,
-        align: "center",
-        lineBreak: false,
-      });
-      doc.fillColor("#000000");
+      addCenteredPageNumber(doc, i - chapterStartPage + 1);
     }
 
     doc.end();
