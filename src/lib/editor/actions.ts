@@ -154,7 +154,7 @@ export async function analyzeChapter(
     if (message.includes("rate_limit") || message.includes("429")) {
       return {
         success: false,
-        message: "Groq rate limit reached. Wait a moment and try again.",
+        message: "Gemini rate limit reached. Wait a moment and try again.",
       };
     }
     return { success: false, message };

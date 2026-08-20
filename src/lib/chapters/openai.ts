@@ -7,7 +7,7 @@ import {
   maxTokensForPages,
   pagesToWordTarget,
 } from "@/lib/chapters/length";
-import { getGroqClient, getGroqModel } from "@/lib/ai/groq";
+import { getGeminiClient, getGeminiModel } from "@/lib/ai/gemini";
 import type {
   ChapterOutlineItem,
   StoryBlueprint,
@@ -79,11 +79,11 @@ Write the full chapter prose. Use vivid description, natural dialogue, and match
 export async function generateChapterWithAI(
   input: GenerateChapterInput
 ): Promise<string> {
-  const groq = getGroqClient();
-  const model = getGroqModel();
+  const gemini = getGeminiClient();
+  const model = getGeminiModel();
   const maxTokens = maxTokensForPages(input.targetPages);
 
-  const completion = await groq.chat.completions.create({
+  const completion = await gemini.chat.completions.create({
     model,
     temperature: 0.85,
     max_tokens: maxTokens,
@@ -100,7 +100,7 @@ export async function generateChapterWithAI(
   });
   const content = completion.choices[0]?.message?.content?.trim();
   if (!content) {
-    throw new Error("Groq returned an empty response. Please try again.");
+    throw new Error("Gemini returned an empty response. Please try again.");
   }
 
   return content;

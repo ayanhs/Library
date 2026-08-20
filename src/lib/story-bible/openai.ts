@@ -1,5 +1,5 @@
 import type { Book } from "@/lib/books/types";
-import { getGroqClient, getGroqModel } from "@/lib/ai/groq";
+import { getGeminiClient, getGeminiModel } from "@/lib/ai/gemini";
 import type { StoryBlueprint } from "@/lib/blueprint/types";
 import { generatedStoryBibleSchema } from "@/lib/story-bible/validation";
 import type { GeneratedStoryBible } from "@/lib/story-bible/validation";
@@ -82,10 +82,10 @@ export async function generateStoryBibleWithAI(
   book: Book,
   blueprint: StoryBlueprint
 ): Promise<GeneratedStoryBible> {
-  const groq = getGroqClient();
-  const model = getGroqModel();
+  const gemini = getGeminiClient();
+  const model = getGeminiModel();
 
-  const completion = await groq.chat.completions.create({
+  const completion = await gemini.chat.completions.create({
     model,
     response_format: { type: "json_object" },
     temperature: 0.75,
@@ -104,7 +104,7 @@ export async function generateStoryBibleWithAI(
 
   const content = completion.choices[0]?.message?.content;
   if (!content) {
-    throw new Error("Groq returned an empty response. Please try again.");
+    throw new Error("Gemini returned an empty response. Please try again.");
   }
 
   let parsed: unknown;

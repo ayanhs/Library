@@ -30,7 +30,7 @@ function formatDbError(message: string): string {
   return message;
 }
 
-/** Step 1: generate Groq prompts and return a batch id. */
+/** Step 1: generate Gemini cover prompts and return a batch id. */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: bookId } = await params;

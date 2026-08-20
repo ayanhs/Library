@@ -1,5 +1,5 @@
 import type { Book } from "@/lib/books/types";
-import { getGroqClient, getGroqModel } from "@/lib/ai/groq";
+import { getGeminiClient, getGeminiModel } from "@/lib/ai/gemini";
 import type { StoryBlueprint } from "@/lib/blueprint/types";
 import { coverPromptsSchema } from "@/lib/covers/validation";
 
@@ -41,10 +41,10 @@ Requirements:
 export async function generateCoverPromptsWithAI(
   input: CoverPromptInput
 ): Promise<{ style: string; prompt: string }[]> {
-  const groq = getGroqClient();
-  const model = getGroqModel();
+  const gemini = getGeminiClient();
+  const model = getGeminiModel();
 
-  const completion = await groq.chat.completions.create({
+  const completion = await gemini.chat.completions.create({
     model,
     response_format: { type: "json_object" },
     temperature: 0.9,
@@ -60,7 +60,7 @@ export async function generateCoverPromptsWithAI(
 
   const content = completion.choices[0]?.message?.content;
   if (!content) {
-    throw new Error("Groq returned an empty response. Please try again.");
+    throw new Error("Gemini returned an empty response. Please try again.");
   }
 
   let parsed: unknown;

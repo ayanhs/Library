@@ -1,6 +1,6 @@
 import type { Book } from "@/lib/books/types";
 import type { BookChapter } from "@/lib/chapters/types";
-import { getGroqClient, getGroqModel } from "@/lib/ai/groq";
+import { getGeminiClient, getGeminiModel } from "@/lib/ai/gemini";
 import { formatStoryBibleForPrompt } from "@/lib/story-bible/context";
 import type { StoryBibleData } from "@/lib/story-bible/types";
 import type { StoryBlueprint } from "@/lib/blueprint/types";
@@ -84,10 +84,10 @@ Include 3-12 issues if found. Be honest but constructive. Scores should reflect 
 export async function analyzeChapterWithAI(
   input: AnalyzeChapterInput
 ): Promise<ChapterAnalysis> {
-  const groq = getGroqClient();
-  const model = getGroqModel();
+  const gemini = getGeminiClient();
+  const model = getGeminiModel();
 
-  const completion = await groq.chat.completions.create({
+  const completion = await gemini.chat.completions.create({
     model,
     response_format: { type: "json_object" },
     temperature: 0.4,
@@ -107,7 +107,7 @@ export async function analyzeChapterWithAI(
 
   const content = completion.choices[0]?.message?.content;
   if (!content) {
-    throw new Error("Groq returned an empty response. Please try again.");
+    throw new Error("Gemini returned an empty response. Please try again.");
   }
 
   let parsed: unknown;
@@ -166,12 +166,12 @@ Rewrite the full chapter applying the improvement focus areas. Rules:
 export async function improveChapterWithAI(
   input: ImproveChapterInput
 ): Promise<string> {
-  const groq = getGroqClient();
-  const model = getGroqModel();
+  const gemini = getGeminiClient();
+  const model = getGeminiModel();
   const wordCount = input.chapter.content.split(/\s+/).filter(Boolean).length;
   const maxTokens = Math.min(16384, Math.ceil(wordCount * 1.8));
 
-  const completion = await groq.chat.completions.create({
+  const completion = await gemini.chat.completions.create({
     model,
     temperature: 0.75,
     max_tokens: maxTokens,
@@ -190,7 +190,7 @@ export async function improveChapterWithAI(
 
   const content = completion.choices[0]?.message?.content?.trim();
   if (!content) {
-    throw new Error("Groq returned an empty response. Please try again.");
+    throw new Error("Gemini returned an empty response. Please try again.");
   }
 
   return content;
