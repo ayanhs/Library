@@ -8,7 +8,7 @@ export function getGeminiClient() {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "Gemini API key is missing. Add GEMINI_API_KEY to your .env.local file."
+      "Gemini API key is missing. Add GEMINI_API_KEY to .env.local (local dev) or Vercel → Settings → Environment Variables (production), then redeploy."
     );
   }
   return new OpenAI({
