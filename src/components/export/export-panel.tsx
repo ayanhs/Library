@@ -202,15 +202,15 @@ export function ExportPanel({
                 className={cn(
                   "flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all",
                   readiness.ready
-                    ? "border-white/10 bg-white/[0.03] hover:border-purple/30 hover:bg-purple/5"
+                    ? "border-white/10 bg-white/[0.03] hover:border-accent/30 hover:bg-accent/5"
                     : "cursor-not-allowed border-white/5 opacity-50",
-                  isLoading && "border-purple/40 bg-purple/10"
+                  isLoading && "border-accent/40 bg-accent/10"
                 )}
               >
                 <div className="flex w-full items-center justify-between">
-                  <Icon className="h-5 w-5 text-purple-light" />
+                  <Icon className="h-5 w-5 text-accent-soft" />
                   {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-purple-light" />
+                    <Loader2 className="h-4 w-4 animate-spin text-accent-soft" />
                   ) : (
                     <Download className="h-4 w-4 text-muted" />
                   )}

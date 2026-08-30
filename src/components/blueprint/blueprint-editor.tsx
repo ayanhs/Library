@@ -73,7 +73,7 @@ export function BlueprintEditor({
 
   const inputClass = cn(
     "w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm",
-    "focus:border-purple/50 focus:outline-none focus:ring-2 focus:ring-purple/20",
+    "focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20",
     disabled && "opacity-50"
   );
 
@@ -101,7 +101,7 @@ export function BlueprintEditor({
         <div className="space-y-3">
           {(["beginning", "middle", "ending"] as const).map((phase) => (
             <div key={phase}>
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-purple-light">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-accent-soft">
                 {phase}
               </label>
               <BookFormTextarea
@@ -160,7 +160,7 @@ export function BlueprintEditor({
             type="button"
             onClick={addSupportingCharacter}
             disabled={disabled}
-            className="inline-flex items-center gap-2 text-sm text-purple-light hover:text-purple-light/80"
+            className="inline-flex items-center gap-2 text-sm text-accent-soft hover:text-accent-soft/80"
           >
             <Plus className="h-4 w-4" />
             Add character
@@ -175,7 +175,7 @@ export function BlueprintEditor({
               key={chapter.chapterNumber}
               className="flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple/15 text-sm font-bold text-purple-light">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-sm font-bold text-accent-soft">
                 {chapter.chapterNumber}
               </span>
               <div className="min-w-0 flex-1 space-y-2">

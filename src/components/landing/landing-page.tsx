@@ -81,24 +81,26 @@ const FEATURES = [
   },
 ] as const;
 
+function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
+  const box = size === "sm" ? "h-8 w-8" : "h-9 w-9";
+  const icon = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  return (
+    <div
+      className={`flex ${box} items-center justify-center rounded-lg bg-primary text-primary-ink shadow-sm`}
+    >
+      <BookOpen className={icon} />
+    </div>
+  );
+}
+
 export function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Background */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 top-20 h-[28rem] w-[28rem] rounded-full bg-purple/15 blur-3xl" />
-        <div className="absolute -right-40 top-1/3 h-[32rem] w-[32rem] rounded-full bg-blue/10 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-64 w-[40rem] -translate-x-1/2 rounded-full bg-purple/5 blur-3xl" />
-      </div>
-
-      {/* Header */}
-      <header className="relative z-20 border-b border-white/5 bg-background/60 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple to-blue shadow-lg shadow-purple/20">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-sm font-semibold tracking-tight sm:text-base">
+    <div className="relative min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-white/8 bg-background/92">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+          <Link href="/" className="group flex items-center gap-2.5">
+            <BrandMark />
+            <span className="text-sm font-semibold tracking-tight transition-colors group-hover:text-white sm:text-base">
               AI Publishing Studio
             </span>
           </Link>
@@ -106,26 +108,22 @@ export function LandingPage() {
           <nav className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-xl px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+              className="rounded-xl px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/5 hover:text-foreground"
             >
               Log in
             </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl bg-gradient-to-r from-purple to-blue px-4 py-2 text-sm font-semibold text-white transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25"
-            >
+            <Link href="/signup" className="btn-primary px-4 py-2">
               Sign up
             </Link>
           </nav>
         </div>
       </header>
 
-      <main className="relative z-10">
-        {/* Hero */}
+      <main>
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8 lg:pb-28">
           <div className="mx-auto max-w-3xl text-center animate-fade-in">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-muted backdrop-blur-sm">
-              <Sparkles className="h-4 w-4 text-purple-light" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-sm text-accent-soft">
+              <Sparkles className="h-4 w-4" />
               <span>From idea to publish-ready manuscript</span>
             </div>
 
@@ -142,26 +140,19 @@ export function LandingPage() {
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/signup"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-8 py-3.5 text-sm font-semibold text-white transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25 sm:w-auto"
-              >
+              <Link href="/signup" className="btn-primary w-full px-8 py-3.5 sm:w-auto">
                 <Sparkles className="h-4 w-4" />
                 Start writing for free
               </Link>
-              <Link
-                href="/login"
-                className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-white/10 sm:w-auto"
-              >
+              <Link href="/login" className="btn-secondary w-full px-8 py-3.5 sm:w-auto">
                 I already have an account
               </Link>
             </div>
           </div>
 
-          {/* Workflow preview card */}
           <div className="mx-auto mt-16 max-w-4xl animate-slide-up">
             <div className="glass-card gradient-border rounded-2xl p-6 sm:p-8">
-              <p className="mb-5 text-center text-xs font-medium uppercase tracking-widest text-purple-light">
+              <p className="mb-5 text-center text-xs font-medium uppercase tracking-widest text-accent-soft">
                 Your writing journey
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:gap-3 sm:text-sm">
@@ -175,7 +166,7 @@ export function LandingPage() {
                   "Export",
                 ].map((step, i, arr) => (
                   <span key={step} className="flex items-center gap-2 sm:gap-3">
-                    <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-medium">
+                    <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-medium transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-white">
                       {step}
                     </span>
                     {i < arr.length - 1 && (
@@ -188,8 +179,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* How it works */}
-        <section className="border-t border-white/5 bg-white/[0.02] py-20 sm:py-24">
+        <section className="border-t border-white/8 bg-surface/50 py-20 sm:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -201,21 +191,21 @@ export function LandingPage() {
               </p>
             </div>
 
-            <div className="mt-14 space-y-6">
+            <div className="mt-14 space-y-4">
               {STEPS.map((step, index) => {
                 const Icon = step.icon;
                 return (
                   <div
                     key={step.number}
-                    className="glass-card gradient-border flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-start sm:p-8"
+                    className="glass-card interactive flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-start sm:p-8"
                     style={{ animationDelay: `${index * 80}ms` }}
                   >
                     <div className="flex shrink-0 items-center gap-4 sm:w-48 sm:flex-col sm:items-start sm:gap-3">
-                      <span className="text-2xl font-bold text-purple-light/80">
+                      <span className="text-2xl font-bold text-primary">
                         {step.number}
                       </span>
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple/15">
-                        <Icon className="h-5 w-5 text-purple-light" />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/15">
+                        <Icon className="h-5 w-5 text-accent-soft" />
                       </div>
                     </div>
                     <div>
@@ -231,7 +221,6 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Features grid */}
         <section className="py-20 sm:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
@@ -250,10 +239,10 @@ export function LandingPage() {
                 return (
                   <div
                     key={feature.title}
-                    className="glass-card rounded-2xl p-6 transition-colors hover:bg-white/[0.04]"
+                    className="glass-card interactive rounded-2xl p-6"
                   >
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple/20 to-blue/20">
-                      <Icon className="h-5 w-5 text-purple-light" />
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15">
+                      <Icon className="h-5 w-5 text-accent-soft" />
                     </div>
                     <h3 className="font-semibold">{feature.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -266,8 +255,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="border-t border-white/5 pb-20 pt-16 sm:pb-24">
+        <section className="border-t border-white/8 pb-20 pt-16 sm:pb-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="glass-card gradient-border mx-auto max-w-3xl rounded-3xl px-6 py-12 text-center sm:px-12 sm:py-16">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -278,16 +266,10 @@ export function LandingPage() {
                 let AI help you go from idea to export.
               </p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link
-                  href="/signup"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-8 py-3.5 text-sm font-semibold text-white transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25 sm:w-auto"
-                >
+                <Link href="/signup" className="btn-primary w-full px-8 py-3.5 sm:w-auto">
                   Get started free
                 </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-8 py-3.5 text-sm font-medium text-muted transition-colors hover:text-foreground sm:w-auto"
-                >
+                <Link href="/login" className="btn-ghost w-full px-8 py-3.5 sm:w-auto">
                   Log in
                 </Link>
               </div>
@@ -296,11 +278,10 @@ export function LandingPage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 py-8">
+      <footer className="border-t border-white/8 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-purple-light" />
+            <BrandMark size="sm" />
             <span>AI Publishing Studio</span>
           </div>
           <p>Write. Publish. Inspire.</p>

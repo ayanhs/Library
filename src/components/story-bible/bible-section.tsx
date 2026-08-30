@@ -33,7 +33,7 @@ export function BibleSection({
         className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-white/[0.02]"
       >
         <div className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple/15 text-purple-light">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 text-accent-soft">
             {icon}
           </span>
           <div>

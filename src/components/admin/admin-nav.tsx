@@ -33,7 +33,7 @@ export function AdminNav() {
   ];
 
   return (
-    <nav className="mb-8 flex gap-2 border-b border-amber-500/10 pb-1">
+    <nav className="mb-8 flex gap-2 border-b border-white/8 pb-1">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         return (
@@ -43,8 +43,8 @@ export function AdminNav() {
             className={cn(
               "inline-flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-sm font-medium transition-all",
               tab.active
-                ? "border-b-2 border-amber-400 text-amber-100"
-                : "text-amber-200/50 hover:text-amber-100"
+                ? "border-b-2 border-primary text-foreground"
+                : "text-muted hover:bg-white/5 hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4" />

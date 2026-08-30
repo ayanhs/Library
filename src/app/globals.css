@@ -9,3 +9,11 @@
     border-color: rgba(255, 255, 255, 0.08);
   }
 }
+
+@layer components {
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold;
+  }
+}

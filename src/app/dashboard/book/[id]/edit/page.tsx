@@ -25,16 +25,8 @@ export default async function EditBookPage({ params }: EditBookPageProps) {
   if (!book) notFound();
 
   return (
-    <div className="relative min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-purple/10 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-blue/10 blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-3xl">
+    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl">
         <BookForm
           mode="edit"
           bookId={book.id}

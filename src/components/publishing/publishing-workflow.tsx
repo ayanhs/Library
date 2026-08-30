@@ -123,7 +123,7 @@ export function PublishingWorkflow({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="mb-1 flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-light" />
+              <Sparkles className="h-5 w-5 text-accent-soft" />
               <h2 className="text-xl font-semibold">AI Story Architect</h2>
               {isApproved && (
                 <span className="rounded-full border border-emerald-500/20 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
@@ -168,8 +168,7 @@ export function PublishingWorkflow({
                   onClick={handleGenerate}
                   disabled={isPending}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white",
-                    "bg-gradient-to-r from-purple to-blue hover:shadow-lg hover:shadow-purple/25"
+                    "btn-primary px-5 py-2.5"
                   )}
                 >
                   <Sparkles className="h-4 w-4" />
@@ -212,7 +211,7 @@ export function PublishingWorkflow({
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-2.5 text-sm font-semibold text-white"
+                className="btn-primary px-5 py-2.5"
               >
                 Save Changes
               </button>
@@ -220,7 +219,7 @@ export function PublishingWorkflow({
                 type="button"
                 onClick={handleCancelEdit}
                 disabled={isPending}
-                className="rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium"
+                className="btn-ghost px-5 py-2.5"
               >
                 Cancel
               </button>

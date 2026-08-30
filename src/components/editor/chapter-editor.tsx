@@ -198,7 +198,7 @@ export function ChapterEditor({
               id="chapter-select"
               value={selectedChapter ?? ""}
               onChange={(e) => handleChapterChange(Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm focus:border-purple/50 focus:outline-none focus:ring-2 focus:ring-purple/20"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20"
             >
               {writableChapters.map((c) => (
                 <option key={c.id} value={c.chapter_number}>
@@ -224,8 +224,7 @@ export function ChapterEditor({
               onClick={handleAnalyze}
               disabled={isPending || !selectedChapter}
               className={cn(
-                "inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white",
-                "bg-gradient-to-r from-purple to-blue hover:shadow-lg hover:shadow-purple/25",
+                "btn-primary px-5 py-2.5",
                 "disabled:cursor-not-allowed disabled:opacity-50"
               )}
             >
@@ -240,7 +239,7 @@ export function ChapterEditor({
 
           {pendingAction === "analyze" && (
             <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted">
-              <Loader2 className="h-5 w-5 animate-spin text-purple-light" />
+              <Loader2 className="h-5 w-5 animate-spin text-accent-soft" />
               Analyzing chapter with AI…
             </div>
           )}
@@ -297,14 +296,14 @@ export function ChapterEditor({
                     className={cn(
                       "rounded-xl border p-3 text-left transition-all",
                       selected
-                        ? "border-purple/40 bg-purple/10"
+                        ? "border-accent/40 bg-accent/10"
                         : "border-white/5 bg-white/[0.02] hover:border-white/10"
                     )}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-medium">{opt.label}</span>
                       {selected && (
-                        <Check className="h-4 w-4 shrink-0 text-purple-light" />
+                        <Check className="h-4 w-4 shrink-0 text-accent-soft" />
                       )}
                     </div>
                     <p className="mt-0.5 text-xs text-muted">{opt.description}</p>
@@ -332,7 +331,7 @@ export function ChapterEditor({
 
             {pendingAction === "improve" && (
               <div className="flex items-center gap-2 text-sm text-muted">
-                <Sparkles className="h-4 w-4 animate-pulse text-purple-light" />
+                <Sparkles className="h-4 w-4 animate-pulse text-accent-soft" />
                 Generating improved version…
               </div>
             )}

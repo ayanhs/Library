@@ -32,18 +32,13 @@ export default async function AdminDashboardPage() {
   ]);
 
   return (
-    <div className="relative min-h-screen bg-[#070605] px-4 py-8 sm:px-6 lg:px-8">
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-amber-600/8 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-orange-700/8 blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-6xl animate-fade-in">
+    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl animate-fade-in">
         <AdminHeader displayName={displayName} />
         <AdminNav />
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-amber-400/80">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">
             Platform overview
           </h2>
           <AdminStatsPanel stats={stats} error={statsError} />
@@ -51,10 +46,10 @@ export default async function AdminDashboardPage() {
 
         <section className="mb-10 space-y-4">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-amber-400/80">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">
               New registrations
             </h2>
-            <p className="mt-1 text-xs text-amber-200/40">
+            <p className="mt-1 text-xs text-muted">
               Name and email for users who signed up in the last {recentUserDays}{" "}
               days.
             </p>
@@ -69,10 +64,10 @@ export default async function AdminDashboardPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-amber-400/80">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">
                 Your books
               </h2>
-              <p className="mt-1 text-xs text-amber-200/40">
+              <p className="mt-1 text-xs text-muted">
                 You have {myBooksCount} book{myBooksCount === 1 ? "" : "s"} — admins
                 can create and publish like any user.
               </p>

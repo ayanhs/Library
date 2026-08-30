@@ -22,7 +22,7 @@ export function BlueprintSection({
     >
       <div className="mb-4 flex items-center gap-2">
         {icon && (
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple/15 text-purple-light">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 text-accent-soft">
             {icon}
           </span>
         )}

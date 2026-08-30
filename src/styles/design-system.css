@@ -1,18 +1,26 @@
 /**
- * Design system — plain CSS that always loads, independent of Tailwind compilation.
- * Keeps the dark theme visible even if Tailwind hiccups during hot reload.
+ * Design system — Gemini blue + Amazon amber on a charcoal canvas.
+ * Solid surfaces (no heavy blur) so the UI stays fast and product-like.
  */
 
 :root {
-  --ds-background: #0a0a0f;
-  --ds-surface: #12121a;
-  --ds-foreground: #f8fafc;
-  --ds-muted: #94a3b8;
-  --ds-purple: #a855f7;
-  --ds-purple-light: #c084fc;
-  --ds-blue: #3b82f6;
-  --ds-blue-light: #60a5fa;
+  --ds-background: #0f1115;
+  --ds-surface: #181b21;
+  --ds-surface-hover: #22262e;
+  --ds-foreground: #e8eaed;
+  --ds-muted: #9aa0a6;
+  --ds-primary: #ff9900;
+  --ds-primary-hover: #ffb020;
+  --ds-primary-ink: #131313;
+  --ds-accent: #4c8bf5;
+  --ds-accent-hover: #6aa1ff;
+  --ds-accent-soft: #8ab4f8;
+  --ds-purple: #ff9900;
+  --ds-purple-light: #ffb84d;
+  --ds-blue: #4c8bf5;
+  --ds-blue-light: #8ab4f8;
   --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-ease: 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 html {
@@ -27,24 +35,41 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.15), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(59, 130, 246, 0.1), transparent),
-    radial-gradient(ellipse 40% 30% at 0% 80%, rgba(168, 85, 247, 0.08), transparent) !important;
+    radial-gradient(ellipse 90% 42% at 50% -18%, rgba(76, 139, 245, 0.14), transparent 58%),
+    radial-gradient(ellipse 50% 36% at 100% 110%, rgba(255, 153, 0, 0.07), transparent 55%) !important;
 }
 
-/* Core UI components */
+/* Core surfaces — solid, cheap to paint */
 .glass-card {
-  background: rgba(18, 18, 26, 0.72) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--ds-surface) !important;
+  border: 1px solid var(--ds-border) !important;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+.glass-card.interactive,
+a.glass-card,
+button.glass-card {
+  transition:
+    border-color var(--ds-ease),
+    background-color var(--ds-ease),
+    box-shadow var(--ds-ease),
+    transform var(--ds-ease);
+}
+
+.glass-card.interactive:hover,
+a.glass-card:hover,
+button.glass-card:hover {
+  background: var(--ds-surface-hover) !important;
+  border-color: rgba(76, 139, 245, 0.28) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05),
+    0 14px 32px rgba(0, 0, 0, 0.38);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #c084fc 0%, #60a5fa 100%);
+  background: linear-gradient(115deg, #ff9900 0%, #ffb84d 28%, #8ab4f8 72%, #4c8bf5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -64,8 +89,8 @@ body {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(168, 85, 247, 0.55),
-    rgba(59, 130, 246, 0.55)
+    rgba(255, 153, 0, 0.45),
+    rgba(76, 139, 245, 0.4)
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -76,11 +101,11 @@ body {
 }
 
 .animate-fade-in {
-  animation: ds-fadeIn 0.5s ease-out forwards;
+  animation: ds-fadeIn 0.4s ease-out forwards;
 }
 
 .animate-slide-up {
-  animation: ds-slideUp 0.5s ease-out forwards;
+  animation: ds-slideUp 0.4s ease-out forwards;
 }
 
 @keyframes ds-fadeIn {
@@ -89,39 +114,65 @@ body {
 }
 
 @keyframes ds-slideUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Form controls — consistent dark styling */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none;
+  }
+
+  button,
+  a,
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    transition: none !important;
+  }
+}
+
+/* Form controls */
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.04);
   color: var(--ds-foreground);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
+  transition:
+    border-color var(--ds-ease),
+    background-color var(--ds-ease),
+    box-shadow var(--ds-ease);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):hover,
+select:hover,
+textarea:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: rgba(168, 85, 247, 0.5);
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+  border-color: rgba(76, 139, 245, 0.65);
+  box-shadow: 0 0 0 3px rgba(76, 139, 245, 0.18);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(148, 163, 184, 0.6);
+  color: rgba(154, 160, 166, 0.7);
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px rgba(18, 18, 26, 0.9) inset !important;
-  -webkit-text-fill-color: #f8fafc !important;
-  caret-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px var(--ds-surface) inset !important;
+  -webkit-text-fill-color: #e8eaed !important;
+  caret-color: #e8eaed;
 }
 
 select option {
@@ -129,9 +180,95 @@ select option {
   color: var(--ds-foreground);
 }
 
-/* Primary gradient button fallback */
-button[type="submit"],
-.btn-primary {
-  background: linear-gradient(to right, var(--ds-purple), var(--ds-blue));
-  color: white;
+/* Buttons — Amazon-style primary, Gemini-style secondary */
+button,
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  transition:
+    background-color var(--ds-ease),
+    background-image var(--ds-ease),
+    color var(--ds-ease),
+    border-color var(--ds-ease),
+    box-shadow var(--ds-ease),
+    transform var(--ds-ease),
+    filter var(--ds-ease);
+}
+
+button:not(:disabled):active,
+.btn-primary:not([aria-disabled="true"]):active,
+.btn-secondary:active,
+.btn-ghost:active,
+a.btn-primary:active,
+a.btn-secondary:active {
+  transform: translateY(1px);
+}
+
+.btn-primary,
+button[type="submit"]:not(.btn-secondary):not(.btn-ghost) {
+  background: var(--ds-primary) !important;
+  background-image: none !important;
+  color: var(--ds-primary-ink) !important;
+  border: 1px solid #e47911;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+.btn-primary:hover:not(:disabled),
+button[type="submit"]:not(.btn-secondary):not(.btn-ghost):hover:not(:disabled),
+a.btn-primary:hover {
+  background: var(--ds-primary-hover) !important;
+  border-color: #ffb020;
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 8px 20px rgba(255, 153, 0, 0.28);
+}
+
+.btn-primary:focus-visible,
+button[type="submit"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.35);
+}
+
+.btn-secondary {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--ds-accent-soft) !important;
+  border: 1px solid rgba(76, 139, 245, 0.45);
+}
+
+.btn-secondary:hover:not(:disabled),
+a.btn-secondary:hover {
+  background: rgba(76, 139, 245, 0.14) !important;
+  border-color: var(--ds-accent);
+  color: #d2e3fc !important;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--ds-foreground) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-ghost:hover:not(:disabled),
+a.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+button:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Generic interactive hover for unstyled icon/text buttons */
+button:not(.btn-primary):not(.btn-secondary):not(.btn-ghost):not([type="submit"]):not(:disabled):hover {
+  filter: brightness(1.12);
 }

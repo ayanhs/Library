@@ -33,16 +33,8 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div className="relative min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-purple/10 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-blue/10 blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-6xl animate-fade-in">
+    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl animate-fade-in">
         <DashboardHeader displayName={displayName} isAdmin={isAdmin} />
         <AiUsagePanel />
 
@@ -54,10 +46,7 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <Link
-            href="/dashboard/new-book"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-3 text-sm font-semibold text-white transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25"
-          >
+          <Link href="/dashboard/new-book" className="btn-primary px-5 py-3">
             <Plus className="h-4 w-4" />
             New Book
           </Link>

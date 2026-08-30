@@ -19,16 +19,10 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "glass-card group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:border-white/15",
+        "glass-card interactive group relative overflow-hidden rounded-2xl p-6",
         className
       )}
     >
-      <div
-        className={cn(
-          "absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-30",
-          gradient === "purple" ? "bg-purple" : "bg-blue"
-        )}
-      />
       <div className="relative flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-muted">{title}</p>
@@ -38,8 +32,8 @@ export function StatCard({
           className={cn(
             "flex h-11 w-11 items-center justify-center rounded-xl",
             gradient === "purple"
-              ? "bg-purple/15 text-purple-light"
-              : "bg-blue/15 text-blue-light"
+              ? "bg-primary/15 text-primary"
+              : "bg-accent/15 text-accent-soft"
           )}
         >
           <Icon className="h-5 w-5" />

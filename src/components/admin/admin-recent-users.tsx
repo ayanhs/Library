@@ -39,11 +39,11 @@ export function AdminRecentUsers({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-amber-500/15 bg-[#0f0c08]/80 backdrop-blur-sm">
+    <div className="glass-card overflow-hidden rounded-2xl">
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-amber-500/10 text-xs uppercase tracking-wider text-amber-200/50">
+            <tr className="border-b border-white/8 text-xs uppercase tracking-wider text-muted">
               <th className="px-5 py-3 font-medium">Name</th>
               <th className="px-5 py-3 font-medium">Email</th>
               <th className="px-5 py-3 font-medium">Registered</th>
@@ -53,13 +53,13 @@ export function AdminRecentUsers({
             {users.map((user) => (
               <tr
                 key={user.id}
-                className="border-b border-amber-500/5 last:border-0"
+                className="border-b border-white/5 last:border-0 transition-colors hover:bg-white/[0.03]"
               >
-                <td className="px-5 py-4 font-medium text-amber-50">
+                <td className="px-5 py-4 font-medium">
                   {user.fullName}
                 </td>
-                <td className="px-5 py-4 text-amber-200/80">{user.email}</td>
-                <td className="px-5 py-4 text-amber-200/50">
+                <td className="px-5 py-4 text-muted">{user.email}</td>
+                <td className="px-5 py-4 text-muted">
                   <time dateTime={user.createdAt}>
                     {formatDate(user.createdAt)}
                   </time>

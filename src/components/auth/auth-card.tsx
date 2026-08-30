@@ -78,7 +78,7 @@ export function FormInput({
         "placeholder:text-muted/60",
         "transition-all duration-200",
         "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-purple/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-purple/20",
+        "focus:border-accent/60 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/25",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
@@ -101,18 +101,15 @@ export function SubmitButton({
       type="submit"
       disabled={isLoading}
       className={cn(
-        "relative w-full overflow-hidden rounded-xl px-4 py-3 text-sm font-semibold text-white",
-        "bg-gradient-to-r from-purple to-blue",
-        "transition-all duration-200",
-        "hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25",
-        "focus:outline-none focus:ring-2 focus:ring-purple/50 focus:ring-offset-2 focus:ring-offset-background",
+        "btn-primary relative w-full overflow-hidden px-4 py-3",
+        "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background",
         "disabled:cursor-not-allowed disabled:opacity-60",
         className
       )}
     >
       {isLoading ? (
         <span className="flex items-center justify-center gap-2">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-ink/25 border-t-primary-ink" />
           Processing...
         </span>
       ) : (
@@ -132,7 +129,7 @@ export function AuthLink({
   return (
     <Link
       href={href}
-      className="font-medium text-purple-light transition-colors hover:text-blue-light"
+      className="font-medium text-accent-soft transition-colors hover:text-primary"
     >
       {children}
     </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Shield, Sparkles } from "lucide-react";
+import { BookOpen, LogOut, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,7 +32,7 @@ export function DashboardHeader({
     <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div className="mb-2 inline-flex items-center gap-2 text-sm text-muted">
-          <Sparkles className="h-4 w-4 text-purple-light" />
+          <BookOpen className="h-4 w-4 text-primary" />
           <span>AI Publishing Studio</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -48,7 +48,7 @@ export function DashboardHeader({
         {isAdmin && (
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-200 transition-all hover:bg-amber-500/20"
+            className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-medium text-primary transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-primary-hover"
           >
             <Shield className="h-4 w-4" />
             Admin
@@ -57,7 +57,7 @@ export function DashboardHeader({
         <button
           onClick={handleSignOut}
           disabled={isSigningOut}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-muted transition-all hover:border-white/15 hover:bg-white/10 hover:text-foreground disabled:opacity-50"
+          className="btn-ghost px-4 py-2.5 text-muted disabled:opacity-50"
         >
         {isSigningOut ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

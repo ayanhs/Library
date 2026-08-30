@@ -35,7 +35,7 @@ function DetailRow({
 
   return (
     <div className="flex gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-purple-light" />
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-accent-soft" />
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted">
           {label}
@@ -73,16 +73,8 @@ export default async function BookPage({ params }: BookPageProps) {
   const isDraft = book.status === "draft";
 
   return (
-    <div className="relative min-h-screen px-4 py-8 sm:px-6 lg:px-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-purple/10 blur-3xl" />
-        <div className="absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-blue/10 blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-3xl animate-fade-in">
+    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl animate-fade-in">
         <Link
           href="/dashboard"
           className="mb-6 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
@@ -98,7 +90,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple/15 text-purple-light">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent-soft">
                 <BookOpen className="h-6 w-6" />
               </div>
               <div>
@@ -176,7 +168,7 @@ export default async function BookPage({ params }: BookPageProps) {
               </p>
               <Link
                 href={`/dashboard/book/${book.id}/edit`}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-purple/25"
+                className="btn-primary mt-4 px-5 py-2.5"
               >
                 <Pencil className="h-4 w-4" />
                 Continue Setup

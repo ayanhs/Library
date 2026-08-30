@@ -86,15 +86,15 @@ export function AdminLoginForm() {
   };
 
   return (
-    <div className="rounded-2xl border border-amber-500/20 bg-[#0c0a08]/90 p-8 shadow-2xl shadow-amber-950/40 backdrop-blur-xl">
+    <div className="glass-card gradient-border rounded-2xl p-8">
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10">
-          <Shield className="h-7 w-7 text-amber-400" />
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15">
+          <Shield className="h-7 w-7 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-amber-50">
+        <h2 className="text-2xl font-bold tracking-tight">
           Admin Console
         </h2>
-        <p className="mt-2 text-sm text-amber-200/60">
+        <p className="mt-2 text-sm text-muted">
           Authorized access only — platform statistics &amp; management
         </p>
       </div>

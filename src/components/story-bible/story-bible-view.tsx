@@ -319,8 +319,7 @@ export function StoryBibleView({
           onClick={handleGenerate}
           disabled={isPending || !hasBlueprint}
           className={cn(
-            "inline-flex shrink-0 items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white",
-            "bg-gradient-to-r from-purple to-blue hover:shadow-lg hover:shadow-purple/25",
+            "btn-primary shrink-0 px-5 py-2.5",
             "disabled:cursor-not-allowed disabled:opacity-50"
           )}
         >

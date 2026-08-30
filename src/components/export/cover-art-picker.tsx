@@ -247,7 +247,7 @@ export function CoverArtPicker({
             Generate 3 options, check the one you want, then confirm your
             selection before exporting.
             {coverRemaining && (
-              <span className="ml-1 text-purple-light">
+              <span className="ml-1 text-accent-soft">
                 ({coverRemaining.remaining}/{coverRemaining.limit} batches left today)
               </span>
             )}
@@ -265,7 +265,7 @@ export function CoverArtPicker({
           className={cn(
             "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
             !generateDisabled
-              ? "bg-purple/20 text-purple-light hover:bg-purple/30"
+              ? "btn-secondary"
               : "cursor-not-allowed bg-white/5 text-muted opacity-50"
           )}
         >
@@ -327,7 +327,7 @@ export function CoverArtPicker({
 
       {isGenerating && (
         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-white/10 py-10 text-sm text-muted">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-light" />
+          <Loader2 className="h-8 w-8 animate-spin text-accent-soft" />
           <p>{progress || "Starting cover generation…"}</p>
           {covers.length > 0 && (
             <p className="text-xs text-emerald-200/80">
@@ -350,8 +350,8 @@ export function CoverArtPicker({
                   className={cn(
                     "relative cursor-pointer overflow-hidden rounded-xl border transition-all",
                     isChecked
-                      ? "border-purple/50 ring-2 ring-purple/40"
-                      : "border-white/10 hover:border-purple/30",
+                      ? "border-primary/50 ring-2 ring-primary/40"
+                      : "border-white/10 hover:border-accent/40",
                     isGenerating && "pointer-events-none opacity-60"
                   )}
                 >
@@ -393,7 +393,7 @@ export function CoverArtPicker({
                     key={`pending-${index}`}
                     className="flex aspect-[2/3] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 bg-white/[0.02] text-xs text-muted"
                   >
-                    <Loader2 className="h-5 w-5 animate-spin text-purple-light" />
+                    <Loader2 className="h-5 w-5 animate-spin text-accent-soft" />
                     <span>Cover {covers.length + index + 1}</span>
                   </div>
                 )
@@ -411,7 +411,7 @@ export function CoverArtPicker({
                 className={cn(
                   "rounded-xl px-4 py-2 text-sm font-medium transition-all",
                   selectedId && selectionDirty
-                    ? "bg-purple text-white hover:bg-purple/90"
+                    ? "btn-primary"
                     : "cursor-not-allowed bg-white/5 text-muted opacity-50"
                 )}
               >

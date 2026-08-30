@@ -30,7 +30,7 @@ export function AiUsageStrip() {
 
   return (
     <div className="mb-6 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs">
-      <Sparkles className="h-3.5 w-3.5 shrink-0 text-purple-light" />
+      <Sparkles className="h-3.5 w-3.5 shrink-0 text-accent-soft" />
       {!summary.aiEnabled ? (
         <span className="text-red-300">AI temporarily unavailable</span>
       ) : (

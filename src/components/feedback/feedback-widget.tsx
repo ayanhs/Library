@@ -57,7 +57,7 @@ export function FeedbackWidget() {
         <div
           className={cn(
             "w-[min(100vw-3rem,22rem)] animate-fade-in rounded-2xl border border-white/10",
-            "bg-[#12121a]/95 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl"
+            "bg-surface p-4 shadow-2xl shadow-black/40"
           )}
         >
           <div className="mb-3 flex items-start justify-between gap-2">
@@ -94,16 +94,15 @@ export function FeedbackWidget() {
               disabled={isSubmitting}
               className={cn(
                 "w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm",
-                "placeholder:text-muted/60 focus:border-purple/40 focus:outline-none focus:ring-2 focus:ring-purple/20"
+                "placeholder:text-muted/60 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20"
               )}
             />
             <button
               type="submit"
               disabled={isSubmitting || message.trim().length < 3}
               className={cn(
-                "inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white",
-                "bg-gradient-to-r from-purple to-blue transition-all",
-                "hover:from-purple-light hover:to-blue-light disabled:cursor-not-allowed disabled:opacity-50"
+                "btn-primary w-full px-4 py-2.5",
+                "disabled:cursor-not-allowed disabled:opacity-50"
               )}
             >
               {isSubmitting ? (
@@ -121,10 +120,9 @@ export function FeedbackWidget() {
         type="button"
         onClick={() => setIsOpen((open) => !open)}
         className={cn(
-          "flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all",
-          "bg-gradient-to-br from-purple to-blue text-white",
-          "hover:scale-105 hover:shadow-purple/30",
-          isOpen && "ring-2 ring-purple/40"
+          "btn-primary h-14 w-14 rounded-full p-0 shadow-lg",
+          "hover:scale-105",
+          isOpen && "ring-2 ring-primary/40"
         )}
         aria-label={isOpen ? "Close feedback" : "Open feedback"}
         title="Send feedback"

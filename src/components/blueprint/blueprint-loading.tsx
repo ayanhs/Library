@@ -5,9 +5,9 @@ export function BlueprintLoading() {
     <div className="glass-card animate-fade-in rounded-2xl p-8 sm:p-10">
       <div className="flex flex-col items-center text-center">
         <div className="relative mb-6 flex h-16 w-16 items-center justify-center">
-          <span className="absolute inset-0 animate-ping rounded-full bg-purple/20" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-accent/20" />
           <span className="absolute inset-2 animate-pulse rounded-full bg-blue/15" />
-          <Sparkles className="relative h-7 w-7 animate-pulse text-purple-light" />
+          <Sparkles className="relative h-7 w-7 animate-pulse text-accent-soft" />
         </div>
 
         <h3 className="text-lg font-semibold">Architecting Your Story</h3>
@@ -26,7 +26,7 @@ export function BlueprintLoading() {
               className="flex items-center gap-3 text-sm text-muted"
               style={{ animationDelay: `${i * 200}ms` }}
             >
-              <span className="h-2 w-2 animate-pulse rounded-full bg-purple-light" />
+              <span className="h-2 w-2 animate-pulse rounded-full bg-accent-soft" />
               {step}
             </div>
           ))}

@@ -52,7 +52,7 @@ export function BookNav({ bookId, bookTitle, active }: BookNavProps) {
               className={cn(
                 "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-white/10 text-foreground shadow-sm"
+                  ? "bg-accent/15 text-accent-soft shadow-sm"
                   : "text-muted hover:bg-white/5 hover:text-foreground"
               )}
             >

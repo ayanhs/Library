@@ -42,7 +42,7 @@ export function DraftSetupBanner({ book }: { book: Book }) {
 
         <Link
           href={`/dashboard/book/${book.id}/edit`}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-2.5 text-sm font-semibold text-white transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25"
+          className="btn-primary shrink-0 px-5 py-2.5"
         >
           <Pencil className="h-4 w-4" />
           Continue Setup

@@ -168,7 +168,7 @@ export function ChapterWriter({
         </p>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/5">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-purple to-blue transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all"
             style={{ width: `${(approvedCount / totalChapters) * 100}%` }}
           />
         </div>
@@ -182,7 +182,7 @@ export function ChapterWriter({
         <div className="glass-card rounded-2xl border border-white/5 p-6">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-purple-light">
+              <p className="text-xs font-semibold uppercase tracking-wide text-accent-soft">
                 Chapter {activeNumber}
               </p>
               <h3 className="text-lg font-semibold">{activeOutline.title}</h3>
@@ -195,8 +195,7 @@ export function ChapterWriter({
                   onClick={handleGenerate}
                   disabled={isPending}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white",
-                    "bg-gradient-to-r from-purple to-blue"
+                    "btn-primary px-4 py-2.5"
                   )}
                 >
                   {isPending ? (
@@ -275,7 +274,7 @@ export function ChapterWriter({
                     className={cn(
                       "rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors",
                       targetPages === pages
-                        ? "border-purple/40 bg-purple/15 text-purple-light"
+                        ? "border-primary/40 bg-primary/15 text-primary"
                         : "border-white/10 bg-white/5 text-muted hover:bg-white/10"
                     )}
                   >
@@ -298,14 +297,14 @@ export function ChapterWriter({
 
           {isPending && !activeChapter && (
             <div className="flex items-center justify-center py-16 text-sm text-muted">
-              <span className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-purple/30 border-t-purple-light" />
+              <span className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-accent/30 border-t-accent-soft" />
               Writing {targetPages}-page chapter with AI…
             </div>
           )}
 
           {isPending && activeChapter && !isEditing && (
             <div className="flex items-center justify-center py-16 text-sm text-muted">
-              <span className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-purple/30 border-t-purple-light" />
+              <span className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-accent/30 border-t-accent-soft" />
               Regenerating as a {targetPages}-page chapter…
             </div>
           )}
@@ -323,7 +322,7 @@ export function ChapterWriter({
                   type="button"
                   onClick={handleSaveEdit}
                   disabled={isPending}
-                  className="rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-2.5 text-sm font-semibold text-white"
+                  className="btn-primary px-5 py-2.5"
                 >
                   Save Edits
                 </button>
@@ -360,7 +359,7 @@ export function ChapterWriter({
           </p>
           <Link
             href={`/dashboard/book/${bookId}/export`}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple to-blue px-5 py-2.5 text-sm font-semibold text-white"
+            className="btn-primary mt-4 px-5 py-2.5"
           >
             Export your book
           </Link>

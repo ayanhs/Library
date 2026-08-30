@@ -22,7 +22,7 @@ export function BookFormField({
         className="block text-sm font-medium text-foreground/90"
       >
         {label}
-        {required && <span className="ml-1 text-purple-light">*</span>}
+        {required && <span className="ml-1 text-primary">*</span>}
       </label>
       {children}
       {error && (
@@ -45,7 +45,7 @@ export function BookFormInput({
         "placeholder:text-muted/60",
         "transition-all duration-200",
         "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-purple/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-purple/20",
+        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
@@ -65,7 +65,7 @@ export function BookFormSelect({
         "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground",
         "transition-all duration-200",
         "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-purple/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-purple/20",
+        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "[&>option]:bg-surface",
         className
@@ -88,7 +88,7 @@ export function BookFormTextarea({
         "min-h-[140px] placeholder:text-muted/60",
         "transition-all duration-200",
         "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-purple/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-purple/20",
+        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}

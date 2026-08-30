@@ -54,7 +54,7 @@ export function IssueList({ issues }: IssueListProps) {
                 >
                   {issue.severity}
                 </span>
-                <span className="text-xs text-purple-light">
+                <span className="text-xs text-accent-soft">
                   {ISSUE_CATEGORY_LABELS[issue.category]}
                 </span>
               </div>

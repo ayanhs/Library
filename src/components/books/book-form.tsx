@@ -133,7 +133,7 @@ export function BookForm({
           Back
         </Link>
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple/15 text-purple-light">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent-soft">
             {isEdit ? (
               <Pencil className="h-6 w-6" />
             ) : (
@@ -320,8 +320,7 @@ export function BookForm({
                 onClick={() => handleSubmit("draft")}
                 disabled={isPending}
                 className={cn(
-                  "inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-foreground",
-                  "transition-all hover:border-white/15 hover:bg-white/10",
+                  "btn-ghost px-6 py-3",
                   "disabled:cursor-not-allowed disabled:opacity-50"
                 )}
               >
@@ -340,9 +339,7 @@ export function BookForm({
                 onClick={() => handleSubmit("create")}
                 disabled={isPending}
                 className={cn(
-                  "inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold text-white",
-                  "bg-gradient-to-r from-purple to-blue",
-                  "transition-all hover:from-purple-light hover:to-blue-light hover:shadow-lg hover:shadow-purple/25",
+                  "btn-primary px-6 py-3",
                   "disabled:cursor-not-allowed disabled:opacity-60"
                 )}
               >

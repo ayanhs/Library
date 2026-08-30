@@ -80,7 +80,7 @@ export function BibleEntryCard({
         </button>
         <div className="flex shrink-0 items-center gap-1">
           {isSaving && (
-            <Loader2 className="h-4 w-4 animate-spin text-purple-light" />
+            <Loader2 className="h-4 w-4 animate-spin text-accent-soft" />
           )}
           <button
             type="button"

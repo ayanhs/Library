@@ -52,16 +52,16 @@ export function AdminStatsPanel({ stats, error }: AdminStatsPanelProps) {
       {statCards.map(({ key, label, sublabel, icon: Icon }) => (
         <div
           key={key}
-          className="rounded-2xl border border-amber-500/15 bg-[#0f0c08]/80 p-6 backdrop-blur-sm"
+          className="glass-card interactive rounded-2xl p-6"
         >
           <div className="mb-4 flex items-center justify-between">
-            <Icon className="h-5 w-5 text-amber-400/80" />
-            <span className="text-xs text-amber-200/40">{sublabel}</span>
+            <Icon className="h-5 w-5 text-accent-soft" />
+            <span className="text-xs text-muted">{sublabel}</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight text-amber-50">
+          <p className="text-3xl font-bold tracking-tight">
             {stats[key].toLocaleString()}
           </p>
-          <p className="mt-1 text-sm text-amber-200/60">{label}</p>
+          <p className="mt-1 text-sm text-muted">{label}</p>
         </div>
       ))}
     </div>
