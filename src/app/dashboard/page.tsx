@@ -39,7 +39,7 @@ export default async function DashboardPage() {
         <AiUsagePanel />
 
         <div className="mb-8 flex items-center justify-between">
-          <div className="glass-card inline-flex items-center gap-4 rounded-2xl px-6 py-4">
+          <div className="glass-card inline-flex items-center gap-4 rounded-3xl px-6 py-4">
             <div>
               <p className="text-sm text-muted">Total Books Created</p>
               <p className="text-3xl font-bold tracking-tight">{booksCount}</p>

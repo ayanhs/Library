@@ -20,11 +20,11 @@ export function BookCard({ book }: { book: BookCardData }) {
   return (
     <div
       className={cn(
-        "glass-card interactive group flex flex-col rounded-2xl p-5"
+        "glass-card interactive group flex flex-col rounded-3xl p-5"
       )}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent-soft">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(168,199,250,0.16)] text-primary">
           <BookOpen className="h-5 w-5" />
         </div>
         <span

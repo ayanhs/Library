@@ -41,11 +41,11 @@ export function BookFormInput({
   return (
     <input
       className={cn(
-        "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground",
+        "w-full rounded-full border border-border bg-surface px-4 py-3 text-sm text-foreground",
         "placeholder:text-muted/60",
         "transition-all duration-200",
-        "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
+        "hover:border-[#5f6368] hover:bg-surface-hover",
+        "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
@@ -62,10 +62,10 @@ export function BookFormSelect({
   return (
     <select
       className={cn(
-        "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground",
+        "w-full rounded-full border border-border bg-surface px-4 py-3 text-sm text-foreground",
         "transition-all duration-200",
-        "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
+        "hover:border-[#5f6368] hover:bg-surface-hover",
+        "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "[&>option]:bg-surface",
         className
@@ -84,11 +84,11 @@ export function BookFormTextarea({
   return (
     <textarea
       className={cn(
-        "w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground",
+        "w-full resize-y rounded-3xl border border-border bg-surface px-4 py-3 text-sm text-foreground",
         "min-h-[140px] placeholder:text-muted/60",
         "transition-all duration-200",
-        "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-accent/50 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/20",
+        "hover:border-[#5f6368] hover:bg-surface-hover",
+        "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}

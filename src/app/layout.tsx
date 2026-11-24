@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f1115",
+  themeColor: "#131314",
   colorScheme: "dark",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body
         className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}
-        style={{ backgroundColor: "#0f1115", color: "#e8eaed" }}
+        style={{ backgroundColor: "#131314", color: "#e3e3e3" }}
       >
         {children}
       </body>

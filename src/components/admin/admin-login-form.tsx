@@ -86,9 +86,9 @@ export function AdminLoginForm() {
   };
 
   return (
-    <div className="glass-card gradient-border rounded-2xl p-8">
+    <div className="glass-card rounded-3xl p-8">
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[rgba(168,199,250,0.16)]">
           <Shield className="h-7 w-7 text-primary" />
         </div>
         <h2 className="text-2xl font-bold tracking-tight">

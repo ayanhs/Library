@@ -19,7 +19,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "glass-card interactive group relative overflow-hidden rounded-2xl p-6",
+        "glass-card interactive group relative overflow-hidden rounded-3xl p-6",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function StatCard({
         </div>
         <div
           className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-xl",
+            "flex h-11 w-11 items-center justify-center rounded-full",
             gradient === "purple"
               ? "bg-primary/15 text-primary"
               : "bg-accent/15 text-accent-soft"

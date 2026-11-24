@@ -168,7 +168,7 @@ export function ChapterWriter({
         </p>
         <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/5">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+            className="h-full rounded-full spark-fill transition-all"
             style={{ width: `${(approvedCount / totalChapters) * 100}%` }}
           />
         </div>

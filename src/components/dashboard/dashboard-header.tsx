@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, LogOut, Shield } from "lucide-react";
+import { LogOut, Shield, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,7 +32,7 @@ export function DashboardHeader({
     <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div className="mb-2 inline-flex items-center gap-2 text-sm text-muted">
-          <BookOpen className="h-4 w-4 text-primary" />
+          <Sparkles className="h-4 w-4 text-primary" />
           <span>AI Publishing Studio</span>
         </div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -48,7 +48,7 @@ export function DashboardHeader({
         {isAdmin && (
           <Link
             href="/admin"
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-medium text-primary transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-primary-hover"
+            className="btn-ghost px-4 py-2.5"
           >
             <Shield className="h-4 w-4" />
             Admin

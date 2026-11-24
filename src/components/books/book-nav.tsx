@@ -41,7 +41,7 @@ export function BookNav({ bookId, bookTitle, active }: BookNavProps) {
   return (
     <div className="mb-6">
       <p className="mb-3 text-sm text-muted">{bookTitle}</p>
-      <nav className="inline-flex rounded-xl border border-white/10 bg-white/[0.03] p-1">
+      <nav className="inline-flex rounded-full border border-border bg-surface p-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
@@ -50,9 +50,9 @@ export function BookNav({ bookId, bookTitle, active }: BookNavProps) {
               key={tab.id}
               href={tab.href}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-accent/15 text-accent-soft shadow-sm"
+                  ? "bg-[rgba(168,199,250,0.16)] text-primary"
                   : "text-muted hover:bg-white/5 hover:text-foreground"
               )}
             >

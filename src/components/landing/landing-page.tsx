@@ -85,10 +85,8 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const box = size === "sm" ? "h-8 w-8" : "h-9 w-9";
   const icon = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
   return (
-    <div
-      className={`flex ${box} items-center justify-center rounded-lg bg-primary text-primary-ink shadow-sm`}
-    >
-      <BookOpen className={icon} />
+    <div className={`spark-fill flex ${box} items-center justify-center rounded-full`}>
+      <Sparkles className={`${icon} text-white`} />
     </div>
   );
 }
@@ -96,11 +94,11 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
 export function LandingPage() {
   return (
     <div className="relative min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-white/8 bg-background/92">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/90">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" className="group flex items-center gap-2.5">
             <BrandMark />
-            <span className="text-sm font-semibold tracking-tight transition-colors group-hover:text-white sm:text-base">
+            <span className="text-sm font-medium tracking-tight transition-colors group-hover:text-white sm:text-base">
               AI Publishing Studio
             </span>
           </Link>
@@ -108,11 +106,11 @@ export function LandingPage() {
           <nav className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="rounded-xl px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/5 hover:text-foreground"
+              className="rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/5 hover:text-foreground"
             >
               Log in
             </Link>
-            <Link href="/signup" className="btn-primary px-4 py-2">
+            <Link href="/signup" className="btn-primary px-5 py-2">
               Sign up
             </Link>
           </nav>
@@ -122,7 +120,7 @@ export function LandingPage() {
       <main>
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24 lg:px-8 lg:pb-28">
           <div className="mx-auto max-w-3xl text-center animate-fade-in">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-4 py-1.5 text-sm text-accent-soft">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[rgba(168,199,250,0.16)] px-4 py-1.5 text-sm text-primary">
               <Sparkles className="h-4 w-4" />
               <span>From idea to publish-ready manuscript</span>
             </div>
@@ -151,8 +149,8 @@ export function LandingPage() {
           </div>
 
           <div className="mx-auto mt-16 max-w-4xl animate-slide-up">
-            <div className="glass-card gradient-border rounded-2xl p-6 sm:p-8">
-              <p className="mb-5 text-center text-xs font-medium uppercase tracking-widest text-accent-soft">
+            <div className="glass-card gradient-border rounded-3xl p-6 sm:p-8">
+              <p className="mb-5 text-center text-xs font-medium uppercase tracking-widest text-primary">
                 Your writing journey
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:gap-3 sm:text-sm">
@@ -166,7 +164,7 @@ export function LandingPage() {
                   "Export",
                 ].map((step, i, arr) => (
                   <span key={step} className="flex items-center gap-2 sm:gap-3">
-                    <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-medium transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-white">
+                    <span className="rounded-full border border-border bg-surface-hover px-3 py-1.5 font-medium transition-colors hover:border-primary/40 hover:bg-[rgba(168,199,250,0.12)] hover:text-primary">
                       {step}
                     </span>
                     {i < arr.length - 1 && (
@@ -179,7 +177,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t border-white/8 bg-surface/50 py-20 sm:py-24">
+        <section className="border-t border-border bg-surface/40 py-20 sm:py-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -197,14 +195,14 @@ export function LandingPage() {
                 return (
                   <div
                     key={step.number}
-                    className="glass-card interactive flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-start sm:p-8"
+                    className="glass-card interactive flex flex-col gap-5 rounded-3xl p-6 sm:flex-row sm:items-start sm:p-8"
                     style={{ animationDelay: `${index * 80}ms` }}
                   >
                     <div className="flex shrink-0 items-center gap-4 sm:w-48 sm:flex-col sm:items-start sm:gap-3">
                       <span className="text-2xl font-bold text-primary">
                         {step.number}
                       </span>
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/15">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(168,199,250,0.16)]">
                         <Icon className="h-5 w-5 text-accent-soft" />
                       </div>
                     </div>
@@ -239,9 +237,9 @@ export function LandingPage() {
                 return (
                   <div
                     key={feature.title}
-                    className="glass-card interactive rounded-2xl p-6"
+                    className="glass-card interactive rounded-3xl p-6"
                   >
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(168,199,250,0.16)]">
                       <Icon className="h-5 w-5 text-accent-soft" />
                     </div>
                     <h3 className="font-semibold">{feature.title}</h3>
@@ -255,9 +253,9 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t border-white/8 pb-20 pt-16 sm:pb-24">
+        <section className="border-t border-border pb-20 pt-16 sm:pb-24">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="glass-card gradient-border mx-auto max-w-3xl rounded-3xl px-6 py-12 text-center sm:px-12 sm:py-16">
+            <div className="glass-card gradient-border mx-auto max-w-3xl rounded-[1.75rem] px-6 py-12 text-center sm:px-12 sm:py-16">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                 Ready to write your book?
               </h2>
@@ -278,7 +276,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/8 py-8">
+      <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             <BrandMark size="sm" />

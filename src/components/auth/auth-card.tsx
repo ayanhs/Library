@@ -19,7 +19,7 @@ export function AuthCard({
   return (
     <div
       className={cn(
-        "glass-card gradient-border rounded-2xl p-8 sm:p-10",
+        "glass-card rounded-3xl p-8 sm:p-10",
         className
       )}
     >
@@ -74,11 +74,11 @@ export function FormInput({
   return (
     <input
       className={cn(
-        "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground",
+        "w-full rounded-full border border-border bg-surface px-4 py-3 text-sm text-foreground",
         "placeholder:text-muted/60",
         "transition-all duration-200",
-        "hover:border-white/15 hover:bg-white/[0.07]",
-        "focus:border-accent/60 focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent/25",
+        "hover:border-[#5f6368] hover:bg-surface-hover",
+        "focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
@@ -129,7 +129,7 @@ export function AuthLink({
   return (
     <Link
       href={href}
-      className="font-medium text-accent-soft transition-colors hover:text-primary"
+      className="font-medium text-primary transition-colors hover:text-primary-hover"
     >
       {children}
     </Link>

@@ -9,33 +9,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0f1115",
-        surface: "#181b21",
-        "surface-hover": "#22262e",
-        border: "rgba(255, 255, 255, 0.08)",
+        background: "#131314",
+        surface: "#1e1f20",
+        "surface-hover": "#282a2c",
+        border: "#3f4144",
         muted: "#9aa0a6",
-        foreground: "#e8eaed",
+        foreground: "#e3e3e3",
         primary: {
-          DEFAULT: "#ff9900",
-          hover: "#ffb020",
-          ink: "#131313",
+          DEFAULT: "#a8c7fa",
+          hover: "#c2d7fc",
+          ink: "#062e6f",
         },
         accent: {
-          DEFAULT: "#4c8bf5",
-          hover: "#6aa1ff",
-          soft: "#8ab4f8",
+          DEFAULT: "#a8c7fa",
+          hover: "#c2d7fc",
+          soft: "#c2d7fc",
         },
         purple: {
-          DEFAULT: "#ff9900",
-          light: "#ffb84d",
+          DEFAULT: "#9b72cb",
+          light: "#cfbcff",
         },
         blue: {
-          DEFAULT: "#4c8bf5",
-          light: "#8ab4f8",
+          DEFAULT: "#4285f4",
+          light: "#a8c7fa",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      borderRadius: {
+        gemini: "1.5rem",
       },
       keyframes: {
         fadeIn: {
@@ -43,13 +46,13 @@ const config: Config = {
           to: { opacity: "1" },
         },
         slideUp: {
-          from: { opacity: "0", transform: "translateY(12px)" },
+          from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "fade-in": "fadeIn 0.4s ease-out forwards",
-        "slide-up": "slideUp 0.4s ease-out forwards",
+        "fade-in": "fadeIn 0.35s ease-out forwards",
+        "slide-up": "slideUp 0.35s ease-out forwards",
       },
     },
   },

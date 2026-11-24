@@ -29,7 +29,7 @@ export function AdminHeader({ displayName }: AdminHeaderProps) {
   return (
     <header className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[rgba(168,199,250,0.16)] px-3 py-1 text-xs font-medium text-primary">
           <Shield className="h-3.5 w-3.5" />
           Admin Console
         </div>

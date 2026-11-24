@@ -61,7 +61,7 @@ export default async function ExportPage({ params }: ExportPageProps) {
           Back to Dashboard
         </Link>
 
-        <div className="glass-card gradient-border rounded-2xl p-6 sm:p-8">
+        <div className="glass-card rounded-3xl p-6 sm:p-8">
           <BookNav bookId={book.id} bookTitle={book.title} active="export" />
           <ExportPanel
             bookId={book.id}

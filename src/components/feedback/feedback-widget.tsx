@@ -56,8 +56,8 @@ export function FeedbackWidget() {
       {isOpen && (
         <div
           className={cn(
-            "w-[min(100vw-3rem,22rem)] animate-fade-in rounded-2xl border border-white/10",
-            "bg-surface p-4 shadow-2xl shadow-black/40"
+            "w-[min(100vw-3rem,22rem)] animate-fade-in rounded-3xl border border-border",
+            "bg-surface p-4"
           )}
         >
           <div className="mb-3 flex items-start justify-between gap-2">
@@ -120,8 +120,7 @@ export function FeedbackWidget() {
         type="button"
         onClick={() => setIsOpen((open) => !open)}
         className={cn(
-          "btn-primary h-14 w-14 rounded-full p-0 shadow-lg",
-          "hover:scale-105",
+          "spark-fill flex h-14 w-14 items-center justify-center rounded-full p-0",
           isOpen && "ring-2 ring-primary/40"
         )}
         aria-label={isOpen ? "Close feedback" : "Open feedback"}

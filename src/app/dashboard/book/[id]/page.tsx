@@ -83,14 +83,14 @@ export default async function BookPage({ params }: BookPageProps) {
           Back to Dashboard
         </Link>
 
-        <div className="glass-card gradient-border rounded-2xl p-6 sm:p-8">
+        <div className="glass-card rounded-3xl p-6 sm:p-8">
           {isDraft && !setupComplete && <DraftSetupBanner book={book} />}
 
           <BookNav bookId={book.id} bookTitle={book.title} active="project" />
 
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent-soft">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[rgba(168,199,250,0.16)] text-primary">
                 <BookOpen className="h-6 w-6" />
               </div>
               <div>

@@ -35,7 +35,7 @@ export function AiUsagePanel() {
   const totalLimit = summary.remaining.reduce((a, r) => a + r.limit, 0);
 
   return (
-    <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.03]">
+    <div className="mb-6 rounded-3xl border border-border bg-surface">
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
@@ -86,7 +86,7 @@ export function AiUsagePanel() {
                   <div
                     className={cn(
                       "h-full rounded-full transition-all",
-                      item.remaining === 0 ? "bg-red-500" : "bg-gradient-to-r from-primary to-accent"
+                      item.remaining === 0 ? "bg-red-500" : "spark-fill"
                     )}
                     style={{
                       width: `${Math.min(100, (item.used / item.limit) * 100)}%`,
